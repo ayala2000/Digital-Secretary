@@ -1,0 +1,55 @@
+/* CSS עיצוב הלוגין */
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #e9e8e9;
+    margin: 0;
+    padding: 0;
+    /* width: 100vh; */
+    height: 100vh;
+  }
+  
+  .Login {
+    width: 300px;
+    margin: 0 auto;
+    margin-top: 100px;
+    padding: 20px;
+    background-color: #e6dede;
+    border: 1px solid #ffffff;
+    border-radius: 5px;
+  }
+  
+  .login-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .mail[type="text"],
+  .password[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+  }
+  
+  .login-container button {
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  
+  .login-container button:hover {
+    background-color: #45a049;
+  }
+  
+  .login-container .error-message {
+    color: #ff0000;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  

@@ -1,23 +1,11 @@
 
+import * as mongoose from 'mongoose';
+import { Role } from 'src/roles/role.enum';
 
-
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-//import { Document } from 'mongoose';
-
-
-export type UserDocument = User & Document;
-
-@Schema()
-export class User {
-  @Prop({ required: true })
-    id: number;
-    @Prop({ required: true })
-      name: string;
-  @Prop({ required: true })
-  email: string;
-
-  @Prop({ required: true })
-  password: string;
-}
-
-export const UserSchema = SchemaFactory.createForClass(User);
+export const UserSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+  password: String,
+  role: String,
+});
+//export const UserSchema = SchemaFactory.createForClass(User);

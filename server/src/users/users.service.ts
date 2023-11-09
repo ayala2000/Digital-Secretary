@@ -1,56 +1,55 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Db, MongoClient } from 'mongodb';
-import { User } from './user.schema';
+import { User } from './User.inteface';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import { log } from 'console';
+import { error, log } from 'console';
+import { CreateUserDto } from './create-user.dto';
 
 @Injectable()
 export class UsersService {
   private client: MongoClient;
   private db:Db;
 
-  constructor() {
-    this.connectToDatabase();
-  }
-
- 
-async connectToDatabase(): Promise<MongoClient> {
-    const client = await MongoClient.connect('mongodb://127.0.0.1:27017/Users');
-    this.db = client.db('Users');
-    console.log('Connected to MongoDB');
-    console.log('Connected to MongoDB');
-
-    return client;
-  }
-  
+  constructor(@InjectModel('User') private readonly userModel: Model<User>) {}
 
   async findByEmail(email: string): Promise<User | undefined> {
-    return this.db.collection<User>('User').findOne({ email });
+    const m=this.userModel.findOne({ email });
+    console.log("(await m).email");
+    return m;
   }
   
   async getAll(): Promise<User[] | undefined> {
-    let arr;
-    arr= this.db.collection<User>('User').find().toArray();
+    const arr= this.userModel.find().exec();
     return arr;
   }
-
-  async create(email: string, password: string,id:number,name:string): Promise<User> {
-    const hashedPassword = await bcrypt.hash(password.toString(), 10);
-    console.log(password);
-    const user = { id,name,email, password: hashedPassword };
-    await this.db.collection<User>('User').insertOne(user);
- return user;
+  async findOne(id: string): Promise<User> {
+    return this.userModel.findById(id).exec();
   }
+  
 
-  async validatePassword(
-    id:number,
-    email: string,
-    password: string,
-    name:string,
-  ): Promise<User | undefined> {
-    const user = await this. findByEmail(email);
-    if (user && (await bcrypt.compare(password, user.password))) {
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    const { password, ...rest } = createUserDto;
+   const hashedPassword = await bcrypt.hash(password.toString(), 10);
+    const createdUser = new this.userModel({
+      ...rest,
+      password: hashedPassword,
+    });
+    return createdUser.save();
+  } 
+
+  async validatePassword( email: string,password: string ): Promise<User | undefined> {
+    const user = await this.findByEmail(email);
+    if (!user)
+    throw new Error('no exist');
+    console.log(user.name,user.password)
+    if (user && (await bcrypt.compare(password.toString(), user.password.toString()))) {
+      log(password.toString())
+      log( user.password.toString())
       return user;
+    
+
     }
-  }
-}
+    else throw new Error('invalidPassword');
+  }}
