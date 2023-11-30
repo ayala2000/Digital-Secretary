@@ -12,7 +12,7 @@ export class TurnController {
   constructor(private readonly turnService: TurnsService, private readonly activityTimeService: ActivityTimeService) { }
   
   // @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   @Get()
   async getAll() {
     const turns = await this.turnService.getAll();
@@ -40,7 +40,7 @@ export class TurnController {
     
     return this.turnService.fillOccupiedMinutes(new Date(date), duration,);
   }
- @UseGuards(AuthGuard)
+//  @UseGuards(AuthGuard)
 
   @Get('/:email')
   async getByEmail(@Param('email') email:string) {
