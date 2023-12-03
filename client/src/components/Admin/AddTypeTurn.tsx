@@ -1,6 +1,7 @@
 import React, { useState, ChangeEvent } from 'react';
 import axios from 'axios';
 import config from '../config ';
+import AddScheduleForm from './Addtimes';
 
 interface Turn {
   typeOfTurn: string;
@@ -71,7 +72,9 @@ const AddTurnForm: React.FC = () => {
         <br />
         <button type="button" onClick={handleAddTurn}>Add Turn</button>
       </form>
+      <AddScheduleForm/>
     </div>
+    
   );
 };
 

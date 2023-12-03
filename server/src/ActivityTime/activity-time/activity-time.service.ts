@@ -23,6 +23,7 @@ export class ActivityTimeService {
         { day: 4, openingHours: ['00:00'], closingHours: ['00:00'] },
         { day: 5, openingHours: ['00:00'], closingHours: ['00:00'] },
         { day: 6, openingHours: ['00:00'], closingHours: ['00:00'] },
+        { day: 7, openingHours: ['00:00'], closingHours: ['00:00'] },
         // ... continue for days 3 to 6
       ];
 

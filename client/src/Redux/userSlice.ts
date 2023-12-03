@@ -7,6 +7,7 @@ interface UserState {
   name: string;
   email: string;
   token: string;
+  isAuthenticated:boolean;
   
 }
 
@@ -14,7 +15,8 @@ interface UserState {
 const initialState: UserState = {
   name: '',
   email: '',
-  token: ''
+  token: '',
+  isAuthenticated: false
 };
 
 
@@ -39,6 +41,7 @@ const userSlice = createSlice({
             state.name=decodedToken.name;
             // if(decodedToken.email!== config.admin.email)
             state.email=decodedToken.email;
+            state.isAuthenticated = true;
     
            
             
@@ -49,6 +52,7 @@ const userSlice = createSlice({
 
      
     },
+    
   },
 });
 
