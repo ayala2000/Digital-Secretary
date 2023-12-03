@@ -8,7 +8,12 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../Redux/store';
 import { setUser } from '../../../Redux/userSlice';
+import type { Dayjs } from 'dayjs';
+//import { PopupProvider, useAlert } from "react-hook-popup";
+import dayjs from 'dayjs';
+
 import { format } from 'date-fns';
+import { TurnState, setTurns } from '../../../Redux/turnSlice';
 
 
 interface Treatment {
@@ -21,13 +26,25 @@ interface Treatment {
 }
 // ***props inerface***
 interface AddTreatmentFormProps {
-  selectedValue: any; // SomeType הוא הסוג של selectedValue
-  setSelectedValue: (value: any) => void; // SomeType הוא הסוג של הערך שנשמר ב-selectedValue
+
+  // selectedValue: any; // SomeType הוא הסוג של selectedValue
+  // setSelectedValue: (value: any) => void; // SomeType הוא הסוג של הערך שנשמר ב-selectedValue
 
 }
 // *** component function ***
-export const AddTreatmentForm: React.FC<AddTreatmentFormProps> = ({ selectedValue, setSelectedValue }) => {
+export const AddTreatmentForm: React.FC<AddTreatmentFormProps> = ({ }) => {
+  //** use readux */
+  const user = useSelector((state: RootState) => state.user)
+  const turns = useSelector((state:TurnState) => state.turns)
+  const dispatch = useDispatch()
+  const getCurrentDate = (): Dayjs => {
+    return dayjs().startOf('day');
+  };
+  const [turnsType, setTurnsType] = useState([]);
+
+  //const[alert1] = useAlert()
   const [isChildVisible, setIsChildVisible] = useState(false);
+  const [selectedValue, setSelectedValue] = useState<Dayjs>(getCurrentDate()); 
   const toggleChildVisibility = (value: any) => {
     {
       (value) ?
@@ -36,20 +53,28 @@ export const AddTreatmentForm: React.FC<AddTreatmentFormProps> = ({ selectedValu
       setIsChildVisible(false)
     }
   };
+  const isDateValid = (date: Dayjs) => {
+    const currentDate = getCurrentDate();
+    return date.isSame(currentDate)||date.isAfter(currentDate);
+  };
 
-  useEffect(() => {
-    if (selectedValue) {
-      setTreatment({ ...treatment, date: selectedValue.toDate() });
+  const onSelect = (newValue: Dayjs) => {
+    if (isDateValid(newValue)) {
+      // setValue(newValue);
+      setSelectedValue(newValue);
+      setTreatment({ ...treatment, date: newValue.toDate() });
+      handleFetchFreeQueuesFromChild(newValue);
+    } else {
+      alert('This day is not active.');
     }
-  }, [selectedValue]);
+  };
   console.log(selectedValue, 'selectedValue');
   const [optionsTreatment, setOptionsTreatment] = useState([]);
-  const [turns, setTurns] = useState([]);
+  // const [turns, setTurns] = useState([]);
   const navigate = useNavigate();
-  const [freeQueues, setFreeQueues] = useState([]);
-  //** use readux */
-  const user = useSelector((state: RootState) => state.user)
-  const dispatch = useDispatch()
+
+  
+
   console.log('user', user);
   dispatch(setUser());
   const [treatment, setTreatment] = useState<Treatment>({
@@ -62,49 +87,47 @@ export const AddTreatmentForm: React.FC<AddTreatmentFormProps> = ({ selectedValu
   });
 
   const handleInputChange = (value: any, name: any) => {
-
     setTreatment({ ...treatment, [name]: value });
-
     console.log(treatment);
-
 
   };
 
-  const fetchFreeQueues = async () => {
-
-    console.log('hiiiiiii');
-    // event.preventDefault();
-    console.log(treatment);
-    const response = await axios.get('http://localhost:3000/turns/free-queues', {
+  const fetchFreeQueues = async (date:any,duration:any) => {
+     await axios.get('http://localhost:3000/turns/free-queues', {
       params: {
         // Replace with the desired date
-        date: treatment.date,
-        duration: treatment.duration
-
-      },
-    })//.then(data => console.log("data", data));
-    console.log(response.data + "kol");
-
-    setFreeQueues(response.data);
+        date: date,
+        duration:duration
+       },     
+    }
+    )   
+    .then((response=>{
+      if(response.data.length==0){ 
+        alert('No appointments available today\n Choose another day')      
+      }   
+     dispatch(setTurns(response.data));
+    }));
     //handleClick(event);
   };
 
+  const deleteTime = (turns:any,time:any) => {
+    const newTurns: Treatment[] = turns.turns.filter((turn: any) => turn !== time);
+    dispatch(setTurns(newTurns)) ;
+  }
 
-  const handleFetchFreeQueuesFromChild = () => {
+  const handleFetchFreeQueuesFromChild = (date:any) => {
     // Implement the logic you want to execute when the function is called from the child.
-    fetchFreeQueues();
+    fetchFreeQueues(date,treatment.duration);
   };
 
   useEffect(() => {
-
     // Make an Axios request to retrieve the turn types from MongoDB
     axios.get('http://localhost:3000/turns-type')
       .then((response) => {
         console.log(response.data)
 
         const allTurns = response.data;
-        setTurns(allTurns);
-
+        setTurnsType(allTurns);
         const typeOfTurns = allTurns.map((obj: any) => obj.typeOfTurn);
         setOptionsTreatment(typeOfTurns);
         console.log(optionsTreatment);
@@ -116,14 +139,18 @@ export const AddTreatmentForm: React.FC<AddTreatmentFormProps> = ({ selectedValu
   }, []);
 
   const  handleTreatmentChange = (event: any, value: any) => {
-    let duration = 0;
-    turns.forEach((turn: any) => {
+    let duration = 10;
+  
+    turnsType.forEach((turn: any) => {
       if (turn.typeOfTurn === value) {
         duration = turn.duration;
 
       }
     });
     setTreatment({ ...treatment, ['name']: value, ['duration']: duration });
+    console.log(treatment.date+'dateeeeeeeee');
+    
+    fetchFreeQueues(treatment.date,duration);
     toggleChildVisibility(value);
     console.log(isChildVisible + 'hhhhh');
 
@@ -133,13 +160,7 @@ export const AddTreatmentForm: React.FC<AddTreatmentFormProps> = ({ selectedValu
 
   const handleClick = async (event: any) => {
     try {
-
-
-      // event.preventDefault();
-
       const duration = treatment.duration;
-
-
       const token = Cookies.get('token');
       const headers = {
         'Content-Type': 'application/json',
@@ -147,49 +168,51 @@ export const AddTreatmentForm: React.FC<AddTreatmentFormProps> = ({ selectedValu
       };
       treatment.time = event;
       treatment.email = user.email;
-
+// setTurns()
       // בצע את בקשת POST
-      await axios.post('http://localhost:3000/turns/addTreatment', treatment, { headers });
-      console.log('add treat');
-
-      // לאחר בצלחת בקשת POST, הפעל בקשת GET כדי לרענן את הנתונים
-      await axios.get('http://localhost:3000/turns/free-queues', {
-        params: {
-          date: treatment.date,
-          duration: treatment.duration,
-        },
-      })
-        .then((response) => {
-          
-
-          alert('Treatment added successfully!');
-          setFreeQueues(response.data);
+      await axios.post('http://localhost:3000/turns/addTreatment', treatment, { headers })
+      .then(async(response) => {
+        alert('Treatment added successfully!');
+        // dispatch(setTurns(response.data));
+        deleteTime(turns,treatment.time);
+        await axios.get('http://localhost:3000/turns/free-queues', {
+          params: {
+            date: treatment.date,
+            duration: treatment.duration,
+          },
         })
         .catch((error) => {
           console.error('שגיאה בשליפת נתונים מעודכנים:', error);
         });
-
-      // ... (הקוד הקיים שלך לאיפוס הטיפול והצגת ההודעה)
-    } catch (error) {
+      })
+    } 
+    catch (error) {
       console.error('שגיאה בהוספת הטיפול:', error);
       alert('הוספת הטיפול נכשלה. אנא נסה שוב מאוחר יותר.');
     }
+      // לאחר בצלחת בקשת POST, הפעל בקשת GET כדי לרענן את הנתונים
+     
+      
+       
+      // ... (הקוד הקיים שלך לאיפוס הטיפול והצגת ההודעה)
   };
 
 
 
   const renderfreeQueues = () => {
     const rows = [];
-    const rowCount = Math.ceil(freeQueues.length / 5); // Display 3 freeQueues per row
+    if(turns&&turns.turns.length){
+    const rowCount = Math.ceil(turns.turns.length / 5); // Display 3 freeQueues per row
+console.log('rowCount',rowCount);
 
     for (let i = 0; i < rowCount; i++) {
       const startIdx = i * 5;
       const endIdx = startIdx + 5;
-      const freeQueuesSlice = freeQueues.slice(startIdx, endIdx);
+      const freeQueuesSlice = turns.turns.slice(startIdx, endIdx);
 
       rows.push(
         <TableRow key={i}>
-          {freeQueuesSlice.map((hour, index) => (
+          {freeQueuesSlice.map((hour:any, index:any) => (
             <TableCell
               key={index}
               onClick={() => handleClick(hour)}
@@ -203,7 +226,7 @@ export const AddTreatmentForm: React.FC<AddTreatmentFormProps> = ({ selectedValu
       );
     }
 
-    return rows;
+    return rows;}
   };
 
 
@@ -242,7 +265,7 @@ export const AddTreatmentForm: React.FC<AddTreatmentFormProps> = ({ selectedValu
             </TableHead>
             <TableBody>{renderfreeQueues()}</TableBody>
           </Table>
-          <CalendarOfTurns selectedValue={selectedValue} setSelectedValue={setSelectedValue} handleFetchFreeQueuesFromChild={handleFetchFreeQueuesFromChild} />
+          <CalendarOfTurns selectedValue={selectedValue} setSelectedValue={setSelectedValue} handleFetchFreeQueuesFromChild={handleFetchFreeQueuesFromChild} onSelect={onSelect}/>
         </div>
       )}
   </>

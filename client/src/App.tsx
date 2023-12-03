@@ -10,12 +10,16 @@ import { AddTreatmentForm } from './components/User/turnUser/addTurn';
 // import { Switch } from '@mui/material';
 import {Home} from './components/User/HomeUser/HomeUser';
 // import ResponsiveAppBar from './components/Ruoter/navlin';
-import RecipeReviewCard from './components/User/blog';
 import { Admin } from './components/Admin/Aabnmd';
 import AddTurnForm from './components/Admin/AddTypeTurn';
 import { CalendarOfTurns } from './components/User/turnUser/calenderOfTurns';
 import { useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
+import AddScheduleForm from './components/Admin/Addtimes';
+import {Blog} from './components/User/blog';
+import Loggin from './components/Login/Loggin';
+import BuildWebSite from './components/Admin/buildWebSite';
+
 //import UserForm from './components/UserForm';
 // <link
 //   rel="stylesheet"
@@ -25,8 +29,7 @@ import dayjs, { Dayjs } from 'dayjs';
 // />
 
 function App() {
-  const getCurrentDate = () => dayjs();
-  const [selectedValue, setSelectedValue] = useState<Dayjs>(getCurrentDate()); 
+
   return (
   <>
   {/* <UserForm/> */}
@@ -36,12 +39,20 @@ function App() {
       
       <Route path="/register" element={<Register />}/>
       <Route path="/turns" element={<TurnUser />}/>
-      <Route path="Blog" element={<RecipeReviewCard />} />
-      <Route path="/addTurn" element={<AddTreatmentForm selectedValue={selectedValue} setSelectedValue={setSelectedValue} />} />
+      <Route path="Blog" element={<Blog />} />
+      <Route path="/addTurn" element={<AddTreatmentForm  />} />
       <Route path="/Home" element={<Home />} />
+      <Route path="/build" element={<BuildWebSite />} />
+
       <Route path="/Admin" element={<Admin />} />
-      <Route path="/CalendarOfTurns" element={<CalendarOfTurns selectedValue={selectedValue} setSelectedValue={setSelectedValue}  
-          
+      <Route path="/addTimes" element={<AddScheduleForm />} />
+      <Route path="/CalendarOfTurns" element={<CalendarOfTurns selectedValue={undefined} setSelectedValue={function (value: any): void {
+          throw new Error('Function not implemented.');
+        } } handleFetchFreeQueuesFromChild={function (): void {
+          throw new Error('Function not implemented.');
+        } } onSelect={function (newValue: any): void {
+          throw new Error('Function not implemented.');
+        } }          
         />} />
 
       <Route path="/types" element={<AddTurnForm 

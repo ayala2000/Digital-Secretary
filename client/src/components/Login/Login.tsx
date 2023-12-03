@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import Form from "react-bootstrap/Form";
 import './Login.css';
@@ -15,6 +15,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Cookies from 'js-cookie';
 import config from "../config ";
 import Container from 'react-bootstrap/Container';
+import { useFormik } from "formik";
 //import "./Login.css";
 
 export const Login = () => {
@@ -27,6 +28,14 @@ export const Login = () => {
     const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
     };
+    const toast:any = useRef(null);
+
+    const show = (data:any) => {
+        toast.current.show({ severity: 'success', summary: 'Form Submitted', detail: formik.values.value });
+    };
+
+
+
 
     function validateForm() {
         return email.length > 0 && password.length > 0;
@@ -45,54 +54,112 @@ export const Login = () => {
     const saveLocalStorge = (data: any) => {
         setData(data);
     };
-    function handleSubmit(event: any) {
-        event.preventDefault();
-        console.log(event);
-        axios.post("http://localhost:3000/auth/login",
-            {
-                email: event.target[0].value,
-                password: event.target[2].value,
-            })
-            .then(result => {
-                console.log(result.data, 'data');
+    const formik:any = useFormik({
+        initialValues: {
+            value: ''
+        },
+        
+        validate: (data:any) => {
+            let errors:any = {};
 
-                if (!(result.data.access_token)) {
+            if (!data.value) {
+                errors.value = 'Name - Surname is required.';
+            }
 
-                    <Route path="/register" Component={Register} />
-                }
-                else {
-                    console.log(result.data);
-                    const receivedToken = result.data.access_token;
-                    Cookies.set('token', receivedToken, { expires: 7 });
-                    localStorage.setItem('myData', email);
-                    saveLocalStorge({ email });
-                    console.log("you are stupid man that you register here-go to cry to mama", result);
-                    if (email === config.admin.email)
-                        navigate('/Admin');//   <Route exact path="/" component={Home} />
-                    else
-                        navigate('/Home');//   <Route exact path="/" component={Home} />
+            return errors;
+        },
+        onSubmit: (event:any,data:any) => {
+            
+            event.preventDefault();
+            data && show(data);
+            console.log(event);
+            axios.post("http://localhost:3000/auth/login",
+                {
+                    email: event.target[0].value,
+                    password: event.target[2].value,
+                })
+                .then(result => {
+                    console.log(result.data, 'data');
+    
+                    if (!(result.data.access_token)) {
+    
+                        <Route path="/register" Component={Register} />
+                    }
+                    else {
+                        console.log(result.data);
+                        const receivedToken = result.data.access_token;
+                        Cookies.set('token', receivedToken, { expires: 7 });
+                        localStorage.setItem('myData', email);
+                        saveLocalStorge({ email });
+                        console.log("you are stupid man that you register here-go to cry to mama", result);
+                        if (email === config.admin.email)
+                            navigate('/Admin');//   <Route exact path="/" component={Home} />
+                        else
+                            navigate('/Home');//   <Route exact path="/" component={Home} />
+    
+    
+                    }
+    
+                })
+                .catch(error => {
+                    if (error.response && error.response.status === 401) {
+                        navigate('/Register');
+                    }
+                    console.log("ppppppppppppppppppppppppppppppp", error);
+    
+    
+                });
+            formik.resetForm();
+        },});
+    // function handleSubmit(event: any) {
+    //     event.preventDefault();
+    //     console.log(event);
+    //     axios.post("http://localhost:3000/auth/login",
+    //         {
+    //             email: event.target[0].value,
+    //             password: event.target[2].value,
+    //         })
+    //         .then(result => {
+    //             console.log(result.data, 'data');
+
+    //             if (!(result.data.access_token)) {
+
+    //                 <Route path="/register" Component={Register} />
+    //             }
+    //             else {
+    //                 console.log(result.data);
+    //                 const receivedToken = result.data.access_token;
+    //                 Cookies.set('token', receivedToken, { expires: 7 });
+    //                 localStorage.setItem('myData', email);
+    //                 saveLocalStorge({ email });
+    //                 console.log("you are stupid man that you register here-go to cry to mama", result);
+    //                 if (email === config.admin.email)
+    //                     navigate('/Admin');//   <Route exact path="/" component={Home} />
+    //                 else
+    //                     navigate('/Home');//   <Route exact path="/" component={Home} />
 
 
-                }
+    //             }
 
-            })
-            .catch(error => {
-                if (error.response && error.response.status === 401) {
-                    navigate('/Register');
-                }
-                console.log("ppppppppppppppppppppppppppppppp", error);
+    //         })
+    //         .catch(error => {
+    //             if (error.response && error.response.status === 401) {
+    //                 navigate('/Register');
+    //             }
+    //             console.log("ppppppppppppppppppppppppppppppp", error);
 
 
-            });
-    }
+    //         });
+            
+    // }
 
     return (
         
         <div className="Login">
 
-            <Form onSubmit={handleSubmit}>
+            <Form onSubmit={formik.onsubmit}>
                 <Form.Group size-lg="true" controlId="email">
-                    <FormControl>
+                    <FormControl sx={{ m: 1, width: '25ch' }} >
                         <TextField
 
                             autoFocus

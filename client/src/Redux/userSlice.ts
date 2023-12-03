@@ -10,11 +10,14 @@ interface UserState {
   
 }
 
+
 const initialState: UserState = {
   name: '',
   email: '',
   token: ''
 };
+
+
 
 const userSlice = createSlice({
   name: 'user',

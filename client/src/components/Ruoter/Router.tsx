@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import {
+  CalendarFilled,
+  CarryOutOutlined,
+  FileAddOutlined,
+  QuestionCircleOutlined,
   UploadOutlined,
   UserOutlined,
   VideoCameraOutlined,
@@ -9,6 +13,7 @@ import {  Link } from 'react-router-dom';
 import App from '../../App';
 import '../../index.css';
 import '../../App.css';
+import { green } from '@mui/material/colors';
 
 const { Sider, Content } = Layout;
 
@@ -31,21 +36,25 @@ const Appss: React.FC = () => {
             <Menu.Item key="1" icon={<UserOutlined/>}>
               <Link to="/">Logon</Link>
             </Menu.Item>
-            <Menu.Item key="2" icon={<VideoCameraOutlined/>}>
+            <Menu.Item key="2" icon={<CalendarFilled />}>
               <Link to="/addTurn">Add Turn</Link>
             </Menu.Item>
-            <Menu.Item key="3" icon={<UploadOutlined/>}>
+            <Menu.Item key="3" icon={<CarryOutOutlined />}>
               <Link to="/turns">My Turns</Link>
+            </Menu.Item>
+            <Menu.Item key="4" icon={<QuestionCircleOutlined
+ />}>
+              <Link to="/blog">About</Link>
             </Menu.Item>
           </Menu>
         </Sider>
         <Layout>
           <Content
             style={{
-              margin: '24px 16px',
-              padding: 24,
+              margin: '3px 3px',
+              padding: 2,
               minHeight: 1000,
-              background: colorBgContainer,
+              background: '#d5d5d5',
             }}
           >
           <App/>

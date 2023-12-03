@@ -16,10 +16,27 @@ import { TurnUser } from '../User/turnUser/turn';
 import { Key } from '@mui/icons-material';
 import './navbar.css';
 import { ClockCircleOutlined } from '@ant-design/icons';
-const pages = ['addTurn', 'turns', 'Blog'];
+import axios from 'axios';
+import config from '../config ';
+
+const pages = [''];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
+
+
 function ResponsiveAppBar() {
+  const [webName, setWebName] = React.useState('');
+  async function getData() {
+    const getBuild: any = await axios.get(`${config.api}/build`)
+      .then((respons) => {
+        setWebName(respons.data.webName);
+        console.log(respons.data, "khkhkhk");
+
+      })
+    console.log(getBuild);
+  }
+  getData();
+
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
@@ -30,22 +47,25 @@ function ResponsiveAppBar() {
     setAnchorElUser(event.currentTarget);
   };
 
-  const handleCloseNavMenu = (event:any) => {
-    
-    const e =event.target.textContent;
-    
-    
-    location.href="/"+e;
+  const handleCloseNavMenu = (event: any) => {
+
+    const e = event.target.textContent;
+
+
+    location.href = "/" + e;
     setAnchorElNav(event.currentTarget);
     console.log(event);
   };
+
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
 
+
+
   return (
-    <AppBar position="static" color="primary" enableColorOnDark sx={{backgroundColor: "#002140"}}>
+    <AppBar position="static" color="primary" enableColorOnDark sx={{ backgroundColor: "#001529" }}>
       <Container maxWidth="xl" sx={{}}>
         <Toolbar disableGutters>
           {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 0  }} /> */}
@@ -62,15 +82,16 @@ function ResponsiveAppBar() {
               letterSpacing: '.3rem',
               color: 'inherit',
               textDecoration: 'none',
-              
+
             }}
           >
-           <ClockCircleOutlined />   Digital Secretary
+
+            <ClockCircleOutlined />  {webName}
           </Typography>
 
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' }}}>
+          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
-            
+
               size="large"
               aria-label="account of current user"
               aria-controls="menu-appbar"
@@ -84,7 +105,7 @@ function ResponsiveAppBar() {
               id="menu-appbar"
               anchorEl={anchorElNav}
               anchorOrigin={{
-                
+
                 vertical: 'bottom',
                 horizontal: 'left',
               }}
@@ -121,10 +142,10 @@ function ResponsiveAppBar() {
               letterSpacing: '.3rem',
               color: 'inherit',
               textDecoration: 'none',
-             
+
             }}
           >
-            <ClockCircleOutlined />   Digital Secretary
+            <ClockCircleOutlined />  {webName}
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
