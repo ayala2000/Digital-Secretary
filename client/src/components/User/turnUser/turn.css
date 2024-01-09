@@ -1,5 +1,5 @@
 .custom-button{
-    background-color: rgb(0, 0, 0);
+    background-color: #001529;
     color: rgb(255, 255, 255);
 }
 
@@ -10,7 +10,7 @@
 }
 .buttonTurn{
     width: 45%;
-    background-color: black;
+    background-color: #001529;
     color: azure;
     border-radius: 0;
     border: 0;

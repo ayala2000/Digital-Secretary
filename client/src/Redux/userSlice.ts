@@ -42,9 +42,7 @@ const userSlice = createSlice({
             // if(decodedToken.email!== config.admin.email)
             state.email=decodedToken.email;
             state.isAuthenticated = true;
-    
-           
-            
+     
           } catch (error: any) {
             console.error('Token verification failed:', error.message);
           }

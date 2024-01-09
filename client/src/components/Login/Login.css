@@ -2,7 +2,7 @@
 
 body {
     font-family: Arial, sans-serif;
-    background-color: #e9e8e9;
+    background-color: #ffff;
     margin: center;
     padding: 0;
     /* width: 100vh; */
@@ -10,11 +10,11 @@ body {
   }
   
   .Login {
-    width: 300px;
+    width: 400px;
     margin: 0 auto;
     margin-top: 100px;
     padding: 20px;
-    background-color: #e6dede;
+    background-color: #ffffff;
     border: 1px solid #ffffff;
     border-radius: 5px;
   }

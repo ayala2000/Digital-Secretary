@@ -14,11 +14,10 @@ import ColorSchemesExample from './components/Ruoter/Router.tsx';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <Provider store={store}>
-
+    <Provider store={store}> 
       <BrowserRouter>
+      <ResponsiveAppBar />
 
-        <ResponsiveAppBar />
         <ColorSchemesExample />
       </BrowserRouter>
     </Provider>

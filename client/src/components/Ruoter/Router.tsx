@@ -20,6 +20,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../Redux/store';
 import { setUser } from '../../Redux/userSlice';
 import config from '../config ';
+import ResponsiveAppBar from './navlin';
+import { styled } from '@mui/material/styles';
+import logo from '../../assets/digital.png';
+
 
 
 const { Sider, Content } = Layout;
@@ -42,16 +46,24 @@ const Appss: React.FC = () => {
   const {
     token: {  },
   } = theme.useToken();
+  
 
   return (
 
     <Layout>
+    
+   
       <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
         <div className="demo-logo-vertical" />
         <Menu
           theme="dark"
           mode="inline"
           defaultSelectedKeys={['1']}
+          style={{
+            margin: '0px 0px',
+            minHeight: 1000,
+            background: '#002140',
+          }}
         >
           <Menu.Item key="1" icon={<UserOutlined />}>
             <Link to="/">Logon</Link>
@@ -67,6 +79,9 @@ const Appss: React.FC = () => {
             <Link to="/blog">About</Link>
           </Menu.Item>
           {user.email === config.admin.email &&<>
+            <Menu.Item key="7" icon={<CarryOutOutlined />}>
+            <Link to="/TurnTable">My Dairy</Link>
+          </Menu.Item>
             <Menu.Item key="5" icon={<PlusCircleOutlined />}>
               <Link to="/types">addTyps</Link>
             </Menu.Item>
@@ -79,17 +94,31 @@ const Appss: React.FC = () => {
           }
         </Menu>
       </Sider>
+
       <Layout>
+
         <Content
+
           style={{
-            margin: '3px 3px',
-            padding: 2,
+            margin: '0px 0px',
             minHeight: 1000,
-            background: '#fffff',
-          }}
-        >
-          <App />
+            // background: '#2356',
+            // backgroundImage: `url(${logo})`,
+            // backgroundPosition: 'center',
+            // backgroundAttachment: 'fixed',
+            // backgroundPositionY:'-390px',
+            // // opacity:'0.25'
+
+
+
+          }}>
+         
+          
+        <App />
+     
+
         </Content>
+     
       </Layout>
     </Layout>
 

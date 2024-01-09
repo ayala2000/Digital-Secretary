@@ -7,20 +7,16 @@ import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
-import { TurnUser } from '../User/turnUser/turn';
-import { Key } from '@mui/icons-material';
+import ContactSupportOutlinedIcon from '@mui/icons-material/ContactSupportOutlined';
 import './navbar.css';
-import { ClockCircleOutlined } from '@ant-design/icons';
+import { ClockCircleOutlined, CommentOutlined, PhoneOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import config from '../config ';
-
 const pages = [''];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+// const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 
 
@@ -65,31 +61,52 @@ function ResponsiveAppBar() {
 
 
   return (
-    <AppBar position="static" color="primary" enableColorOnDark sx={{ backgroundColor: "#001529" }}>
-      <Container maxWidth="xl" sx={{}}>
+    <AppBar position="static"   sx={{ backgroundColor: 'white', boxShadow: '0' }}>
+      <Container maxWidth="xl" sx={{ boxShadow: '0' }}>
         <Toolbar disableGutters>
           {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 0  }} /> */}
           <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="/"
+            // variant="h6"
+            // noWrap
+            // component="a"
+            // href="/"
             sx={{
-              mr: 2,
               display: { xs: 'none', md: 'flex' },
               fontFamily: 'monospace',
               fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
+              fontSize:25,
+              letterSpacing: '.05rem',
+              color: '#002140',
               textDecoration: 'none',
 
             }}
           >
 
-            <ClockCircleOutlined />  {webName}
+            <ClockCircleOutlined  style={{ marginRight: '0.5rem' }}/> {webName}
+          </Typography>
+          <Typography
+            variant="h6"
+            noWrap
+            component="a"
+            href="/blog"
+            sx={{
+              ml:'auto',
+              display: { xs: 'none', md: 'flex' },
+              fontFamily: 'monospace',
+              fontWeight: 700,
+              fontSize:25,
+              letterSpacing: '.005rem',
+              color: '#002140',
+              textDecoration: 'none',
+
+            }}
+          >
+
+            <ContactSupportOutlinedIcon  /> 
           </Typography>
 
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+
+          <Box sx={{ flexGrow: 0, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
 
               size="large"
@@ -97,7 +114,7 @@ function ResponsiveAppBar() {
               aria-controls="menu-appbar"
               aria-haspopup="true"
               onClick={handleOpenNavMenu}
-              color="inherit"
+             
             >
               <MenuIcon />
             </IconButton>
@@ -140,14 +157,14 @@ function ResponsiveAppBar() {
               fontFamily: 'monospace',
               fontWeight: 700,
               letterSpacing: '.3rem',
-              color: 'inherit',
+              color: '#002140',
               textDecoration: 'none',
 
             }}
           >
             <ClockCircleOutlined />  {webName}
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+          <Box sx={{ flexGrow: 0, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
               <Button
                 key={page}
@@ -160,33 +177,7 @@ function ResponsiveAppBar() {
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
+          {/* <ClockCircleOutlined />  {webName} */}
           </Box>
         </Toolbar>
       </Container>

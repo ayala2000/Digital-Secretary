@@ -32,7 +32,7 @@ interface CalendarOfTurnsProps {
   return (
     <>
     
-      <Alert message={`You selected date: ${selectedValue?.format('YYYY-MM-DD')}`} />
+      {/* <Alert message={`You selected date: ${selectedValue?.format('YYYY-MM-DD')}`} /> */}
       <Calendar value={selectedValue} onSelect={HandelOnSelect} onPanelChange={onPanelChange}  />
       
     </>

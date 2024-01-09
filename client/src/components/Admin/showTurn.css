@@ -1,0 +1,14 @@
+:where(.css-dev-only-do-not-override-qgg3xn).ant-table-wrapper .ant-table-thead >tr>th, :where(.css-dev-only-do-not-override-qgg3xn)
+.ant-table-wrapper .ant-table-thead >tr>td
+ {   
+     color: #faad14 !important;
+    background: #001529 !important;
+    font-size:15pxx-small !important;
+   
+    /* border-bottom: 1px solid #f11414;
+    padding: 145px 3px; */
+}
+tbody{
+font-weight: bold;
+color: #001529;
+}

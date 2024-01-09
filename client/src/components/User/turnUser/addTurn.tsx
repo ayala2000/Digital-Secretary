@@ -14,6 +14,7 @@ import dayjs from 'dayjs';
 
 import { format } from 'date-fns';
 import { TurnState, setTurns } from '../../../Redux/turnSlice';
+import { JSX } from 'react/jsx-runtime';
 
 
 interface Treatment {
@@ -199,34 +200,24 @@ export const AddTreatmentForm: React.FC<AddTreatmentFormProps> = ({ }) => {
 
 
 
-  const renderfreeQueues = () => {
-    const rows = [];
-    if(turns&&turns.turns.length){
-    const rowCount = Math.ceil(turns.turns.length / 5); // Display 3 freeQueues per row
-console.log('rowCount',rowCount);
-
-    for (let i = 0; i < rowCount; i++) {
-      const startIdx = i * 5;
-      const endIdx = startIdx + 5;
-      const freeQueuesSlice = turns.turns.slice(startIdx, endIdx);
-
-      rows.push(
-        <TableRow key={i}>
-          {freeQueuesSlice.map((hour:any, index:any) => (
-            <TableCell
-              key={index}
-              onClick={() => handleClick(hour)}
-
-              style={{ cursor: 'pointer' }}
-            >
-              {hour}
-            </TableCell>
-          ))}
-        </TableRow>
-      );
+  const renderfreeQueues = (duration:any) => {
+    const buttons: any[] = [];
+    if (turns && turns.turns.length) {
+      turns.turns.forEach((hour:any, index:any) => {
+        buttons.push(
+          <button
+            key={index}
+            onClick={() => handleClick(hour)}
+            style={{ margin: '5px', cursor: 'pointer',backgroundColor:'##001529' }}
+          >
+            duration: {duration}
+            <br/>
+            {hour}
+          </button>
+        );
+      });
     }
-
-    return rows;}
+    return buttons;
   };
 
 
@@ -241,7 +232,7 @@ console.log('rowCount',rowCount);
           <Autocomplete
 
             options={optionsTreatment}
-            sx={{ width: 300 }}
+            sx={{marginTop:5, width: 300 ,ml:'10%' ,color:'white',backgroundColor:'white'}}
             onChange={handleTreatmentChange}
 
             renderInput={(params) => (
@@ -263,7 +254,8 @@ console.log('rowCount',rowCount);
 
               </TableRow>
             </TableHead>
-            <TableBody>{renderfreeQueues()}</TableBody>
+           <h2 color='white'> Choose a convenient time for you :)</h2>
+            <TableBody>{renderfreeQueues(treatment.duration)}</TableBody>
           </Table>
           <CalendarOfTurns selectedValue={selectedValue} setSelectedValue={setSelectedValue} handleFetchFreeQueuesFromChild={handleFetchFreeQueuesFromChild} onSelect={onSelect}/>
         </div>

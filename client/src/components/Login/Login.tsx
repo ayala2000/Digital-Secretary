@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import Form from "react-bootstrap/Form";
 import './Login.css';
@@ -8,52 +8,38 @@ import { Link, Route, useNavigate } from 'react-router-dom';
 //import { useHistory } from 'react-router-dom';
 //import Home from "../Home/Home";
 import { Register } from "../Register/Register";
-import { FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField } from "@mui/material";
+import { FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, Stack, TextField } from "@mui/material";
 import React from "react";
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Cookies from 'js-cookie';
 import config from "../config ";
 import Container from 'react-bootstrap/Container';
-import { useFormik } from "formik";
-import Appss from "../Ruoter/Router";
+//import "./Login.css";
+import Alert from '@mui/material/Alert';
+import { setUser } from "../../Redux/userSlice";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../Redux/store";
-import { setUser } from "../../Redux/userSlice";
 
 
-//import "./Login.css";
 
 export const Login = () => {
+    const user = useSelector((state: RootState) => state.user)
+    const dispatch = useDispatch()
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const handleClickShowPassword = () => setShowPassword((show) => !show);
     const [data, setData] = useState('');
-    const user = useSelector((state: RootState) => state.user)
-    const dispatch = useDispatch()
-
+    const [showalert, setShowalert] = useState(false);
     const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
     };
-    const toast:any = useRef(null);
-
-    // const show = (data:any) => {
-    //     toast.current.show({ severity: 'success', summary: 'Form Submitted', detail: formik.values.value });
-    // };
-
-
-
 
     function validateForm() {
         return email.length > 0 && password.length > 0;
     }
-    useEffect(() => {
-        const savedData = localStorage.getItem('myData');
-        if (savedData) {
-          setData(savedData);
-        }
-      }, []);
+
     useEffect(() => {
         localStorage.setItem('myData', data);
     }, [data]);
@@ -74,8 +60,7 @@ export const Login = () => {
                 console.log(result.data, 'data');
 
                 if (!(result.data.access_token)) {
-
-                    <Route path="/register" Component={Register} />
+                    setShowalert(true);
                 }
                 else {
                     console.log(result.data);
@@ -84,12 +69,10 @@ export const Login = () => {
                     localStorage.setItem('myData', email);
                     saveLocalStorge({ email });
                     dispatch(setUser());
+
                     console.log("you are stupid man that you register here-go to cry to mama", result);
-                    if (email === config.admin.email){
-                        
-
-
-                        navigate('/appss');}//   <Route exact path="/" component={Home} />
+                    if (email === config.admin.email)
+                        navigate('/Admin');//   <Route exact path="/" component={Home} />
                     else
                         navigate('/Home');//   <Route exact path="/" component={Home} />
 
@@ -99,22 +82,23 @@ export const Login = () => {
             })
             .catch(error => {
                 if (error.response && error.response.status === 401) {
-                    navigate('/Register');
+                    setShowalert(true);
                 }
-                console.log("ppppppppppppppppppppppppppppppp", error);
-
-
             });
-            
     }
 
     return (
-        
-        <div className="Login">
 
+        <div className="Login">
+ {
+                    showalert &&
+                    <Stack sx={{ m: 2,width: '45ch' }} spacing={2}>
+                        <Alert severity="error">This name or password is wrong!</Alert>
+                    </Stack>
+                }
             <Form onSubmit={handleSubmit}>
                 <Form.Group size-lg="true" controlId="email">
-                    <FormControl sx={{ m: 1, width: '25ch' }} >
+                    <FormControl sx={{ m: 2, width: '45ch' }}>
                         <TextField
 
                             autoFocus
@@ -129,7 +113,7 @@ export const Login = () => {
 
                 <Form.Group size-lg="true" controlId="password">
                     <div className="password">
-                        <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
+                        <FormControl sx={{ m: 2, width: '45ch' }} variant="outlined">
                             <InputLabel htmlFor="outlined-adornment-password" >Password</InputLabel>
                             <OutlinedInput
                                 id="outlined-adornment-password"
@@ -153,13 +137,16 @@ export const Login = () => {
 
                     </div>
                 </Form.Group>
+               
+                <Form.Group size-lg="true">
+                    <FormControl sx={{ m: 2, width: '45ch' }} variant="outlined">
 
-                <Button size="lg" type="submit" disabled={!validateForm()}>
-                    Login
-                </Button>
-
+                        <Button size-lg="true" type="submit" disabled={!validateForm()}>
+                            Login
+                        </Button></FormControl>
+                </Form.Group>
             </Form>
-            <Link to="/register">register</Link>
+          don't have account? <Link to="/register">register</Link>
         </div>
 
     );

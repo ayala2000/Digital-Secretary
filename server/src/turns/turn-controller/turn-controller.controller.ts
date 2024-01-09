@@ -42,18 +42,22 @@ export class TurnController {
   }
 //  @UseGuards(AuthGuard)
 
-  @Get('/:email')
-  async getByEmail(@Param('email') email:string) {
-    const turns = await this.turnService.getByEmail(email);
-    return turns;
-  }
+ 
 
-  @Get('/:date')
-  async getByDate(@Param('date') date:string) {
+  @Get('date/')
+  async getByDate(@Query('date') date: string) {
+    console.log(date,'daaaaaaaaaateee');
     const users = await this.turnService.getByDate(date);
     return users;
-   
     
+  }
+  @Get('/:email')
+
+  
+  async getByEmail(@Param('email') email:string) {
+    console.log('gkgkjgkjgkjg');
+    const turns = await this.turnService.getByEmail(email);
+    return turns;
   }
   
   // @Post('addTreatment')

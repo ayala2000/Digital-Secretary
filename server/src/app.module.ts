@@ -15,6 +15,15 @@ import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './roles/roles.guard';
 import { InitializerService } from './initializer.service';
 import { BuildModule } from './build/build.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
+import { MailController } from './mail/mail.controller';
+import { MailService } from './mail/mail.service';
+// import { MailModule } from './mail/mail.module';
+import { BullModule } from '@nestjs/bull';
+import { MessageService } from './massege/message.service';
+import { MessageController } from './massege/message.controller';
+import { MassegeModule } from './massege/message.module';
 @Module({
   imports: [
     MongooseModule.forRoot('mongodb://127.0.0.1:27017/Users'),
@@ -32,6 +41,32 @@ import { BuildModule } from './build/build.module';
       secret: 'secret',
       signOptions: { expiresIn: '1d' },
     }),
+    MailerModule.forRootAsync({
+      useFactory: () => ({
+        transport: 'smtps://mydigitalsecretary@gmail.com',
+        defaults: {
+          from: '"nest-modules" <mydigitalsecretary@gmail.com>',
+        },
+        template: {
+          dir: __dirname + '/templates',
+          adapter: new PugAdapter(),
+          options: {
+            strict: true,
+          },
+        },
+      }),
+    }),
+   
+    BullModule.forRoot({
+      redis: {
+        host: 'localhost',
+        port: 6379,
+      },
+    }),
+   
+    MassegeModule,
+
+    // MailModule,
     
   ],
   

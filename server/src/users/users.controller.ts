@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Res, Req } from '@nestjs/common';
+import { Controller, Post, Body, Get, Res, Req, Param, Query } from '@nestjs/common';
 import { AuthService } from '../auth/auth.service';
 import { CreateUserDto } from './create-user.dto';
 import { LoginUserDto } from './login-user.dto';
@@ -20,6 +20,11 @@ export class UsersController {
     const users = await this.userService.getAll();
     console.log(response.cookie);
     return users;
+  }
+  @Get('email') 
+  async getByEmail(@Query('email') email:string)  {
+    const user = await this.userService.findByEmail(email);
+    return user;
   }
 
   @Post('register')
