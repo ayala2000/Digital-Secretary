@@ -29,20 +29,9 @@ export class TurnController {
     @Query('date') date: string,
     @Query('duration') duration: number,
   ): Promise<any[]> {
-    console.log(duration,'durationv');
-    const newDate= new Date(date).getDay();
-    console.log(date);
-    
-    console.log(newDate,'newDate');
-    
-    const active = await this.activityTimeService.getByDay(newDate);
-    console.log(active,'active\nactive');
-    
     return this.turnService.fillOccupiedMinutes(new Date(date), duration,);
   }
 //  @UseGuards(AuthGuard)
-
- 
 
   @Get('date/')
   async getByDate(@Query('date') date: string) {

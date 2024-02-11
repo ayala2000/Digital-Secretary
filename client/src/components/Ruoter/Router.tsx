@@ -11,18 +11,17 @@ import {
   VideoCameraOutlined,
 } from '@ant-design/icons';
 import { Layout, Menu, theme } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, Router } from 'react-router-dom';
 import App from '../../App';
 import '../../index.css';
 import '../../App.css';
-import { green } from '@mui/material/colors';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../Redux/store';
 import { setUser } from '../../Redux/userSlice';
 import config from '../config ';
-import ResponsiveAppBar from './navlin';
-import { styled } from '@mui/material/styles';
-import logo from '../../assets/digital.png';
+import MyRouter from '../../Routs';
+
+import './Ruoter.css';
 
 
 
@@ -62,7 +61,7 @@ const Appss: React.FC = () => {
           style={{
             margin: '0px 0px',
             minHeight: 1000,
-            background: '#002140',
+            background: '#1a1a1a',
           }}
         >
           <Menu.Item key="1" icon={<UserOutlined />}>

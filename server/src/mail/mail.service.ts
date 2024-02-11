@@ -10,7 +10,7 @@ export class MailService {
         this.mailerService
             .sendMail({
                 to:to, // list of receivers
-                from: '"Digital-Secretary" <MyDigitalSecretary@gmail.com>', // sender address
+                from: '"Digital Secretary" <mydigitalsecretary@gmail.com>', // sender address
                 subject:subject, // Subject line
                 text:text, // plaintext body
                 html: '<b>' + text + '</b> '

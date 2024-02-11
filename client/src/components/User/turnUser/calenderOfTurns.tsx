@@ -14,7 +14,7 @@ interface CalendarOfTurnsProps {
 
   export const CalendarOfTurns: React.FC<CalendarOfTurnsProps> = ({selectedValue,setSelectedValue,handleFetchFreeQueuesFromChild,onSelect}) => {
     const getCurrentDate = () => dayjs();
-    const [vdalue, setValue] = useState<Dayjs>(getCurrentDate()); // Set the initial state to the current date and time
+    const [value, setValue] = useState<Dayjs>(getCurrentDate()); // Set the initial state to the current date and time
 
     const HandelOnSelect = (newValue: Dayjs) => {
       onSelect(newValue);
@@ -33,7 +33,9 @@ interface CalendarOfTurnsProps {
     <>
     
       {/* <Alert message={`You selected date: ${selectedValue?.format('YYYY-MM-DD')}`} /> */}
-      <Calendar value={selectedValue} onSelect={HandelOnSelect} onPanelChange={onPanelChange}  />
+      <Calendar value={selectedValue} onSelect={HandelOnSelect} onPanelChange={onPanelChange} 
+      style={{width:'50%',
+      margin:'auto'}} />
       
     </>
   );

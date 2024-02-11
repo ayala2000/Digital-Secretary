@@ -43,8 +43,21 @@ import { MassegeModule } from './massege/message.module';
     }),
     MailerModule.forRootAsync({
       useFactory: () => ({
-        transport: 'smtps://mydigitalsecretary@gmail.com',
-        defaults: {
+        transport: {
+          host: 'smtp.gmail.com',
+          port: 465,
+          pool:true,
+          secure: true,
+          
+          auth: {
+            user: 'mydigitalsecretary@gmail.com',
+            pass: 'vhftkwfcfloqhhkr',
+          },
+          tls: {
+            rejectUnauthorized: false,
+          },
+        },
+       defaults: {
           from: '"nest-modules" <mydigitalsecretary@gmail.com>',
         },
         template: {

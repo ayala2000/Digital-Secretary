@@ -74,7 +74,7 @@ const AddTurnForm: React.FC = () => {
       </form>
       <AddScheduleForm/>
     </div>
-    
+  
   );
 };
 

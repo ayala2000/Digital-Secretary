@@ -22,11 +22,30 @@ export class TurnsService {
    * @param activityTimeModel - Mongoose model for ActivityTime.
    * @param turnTypeModel - Mongoose model for TurnType.
    */
-
-
   constructor(@InjectModel('Turn') private readonly turnModel: Model<Turn>,
     @InjectModel('ActivityTime') private readonly activityTimeModel: Model<ActivityTime>,
     @InjectModel('TurnType') private readonly turnTypeModel: Model<TurnType>) { }
+    
+
+   /**
+   * Create a new turn using the provided DTO.
+   *
+   * @param createTurnDto - The DTO for creating a new turn.
+   * @returns A promise with the created turn.
+   */
+   async create(createTurnDto: CreateTurnDto): Promise<Turn> {
+    const createdTurn = new this.turnModel(createTurnDto);
+    return createdTurn.save();
+  }
+
+  async remove(id: string): Promise<Turn> {
+    return this.turnModel.findByIdAndRemove(id).exec();
+  }
+
+  async update(id: string, updateUserDto: any): Promise<Turn> {
+    return this.turnModel.findByIdAndUpdate(id, updateUserDto, { new: true }).exec();
+  }
+
 
 
  /**
@@ -40,16 +59,13 @@ export class TurnsService {
       // If the input is not a Date object, you can try to parse it
       date = new Date(date);
     }
-
     if (isNaN(date.getTime())) {
       // Invalid date
       return 'Invalid Date';
     }
-
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is zero-based
     const year = date.getFullYear();
-
     return `${day}/${month}/${year}`;
   }
   
@@ -125,26 +141,53 @@ export class TurnsService {
     return { open, close };
   }
   
-   /**
-   * Create a new turn using the provided DTO.
+ /**
+   * Convert a time string to minutes.
    *
-   * @param createTurnDto - The DTO for creating a new turn.
-   * @returns A promise with the created turn.
+   * @param time - The time string to convert.
+   * @returns The time in minutes.
    */
-  async create(createTurnDto: CreateTurnDto): Promise<Turn> {
-    const createdTurn = new this.turnModel(createTurnDto);
-    return createdTurn.save();
+ private getMinutesFromTime(time: string): number {
+  const timesArry = time.split(':').map(Number);
+  return timesArry[0] * 60 + timesArry[1];
+}
+
+/**
+ * Convert minutes to a time string.
+ *
+ * @param minute - The minutes to convert.
+ * @returns The time string.
+ */
+
+private getTimeFromMinutes(minute: number): string {
+  const hour: IntegerType = minute / 60;
+  return parseInt(hour.toString()) + ':' + minute % 60;
+}
+/**
+ * Calculate the time difference in hours between two time strings.
+ *
+ * @param openTime - The opening time string.
+ * @param closingTime - The closing time string.
+ * @returns The time difference in hours.
+ */
+private getTimeDifference(openTime: any, closingTime: any): number {
+
+  const timeDifferenceInMinutes = Math.abs(openTime - closingTime);
+
+  // Convert the time difference to hours
+  const timeDifferenceInHours = timeDifferenceInMinutes / 60;
+
+  return timeDifferenceInHours;
+}
+
+
+private isAvailable = (i: number, duration:any,minutesArray:any) => {
+  const range: number = parseInt(i.toString()) + parseInt(duration.toString());
+  for (let k: number = i; k < range && k < minutesArray.length; k++) {
+    if (minutesArray[k] === -1)
+      return false;
   }
-
-  async remove(id: string): Promise<Turn> {
-    return this.turnModel.findByIdAndRemove(id).exec();
-  }
-
-  async update(id: string, updateUserDto: any): Promise<Turn> {
-    return this.turnModel.findByIdAndUpdate(id, updateUserDto, { new: true }).exec();
-  }
-
-
+  return true; }
 
   /**
    * Calculate and return available turn times for a given date and duration.
@@ -156,14 +199,14 @@ export class TurnsService {
 
   async fillOccupiedMinutes(getdate: Date, duration: number): Promise<any[]> {
     // Calculate the opening time in minutes (assuming it's a whole hour)
+
+    //retrieve the day and the times from the date 
     const dayFromDate = getdate.getDay()+1;
     const time= await this.getTimeByDay(dayFromDate);
-    const openingTime = time.open ;
-    // Calculate the closing time in minutes (6 hours after opening time)
-    const closingTime = time.close;
+    const openingTime = this.getMinutesFromTime(time.open);;
+    const closingTime = this.getMinutesFromTime(time.close);
     const difference=this.getTimeDifference(openingTime,closingTime);
-    const [hours, minutes] = openingTime.split(':').map(Number);
-    const open = hours *60+minutes;
+
     // Create an array of minutes for the entire operating time
     const minutesArray = Array(Math.ceil(60 * difference)).fill(0);
     const availableTurns = [];
@@ -171,16 +214,16 @@ export class TurnsService {
     const date = await this.formatDate(getdate);
     const occupiedQueues = await this.turnModel.find({ date });
     // Iterate through the occupied queues and mark the corresponding minutes as occupied
-    const promises = occupiedQueues.map(async (queue) => {
+    const promises = 
+    occupiedQueues.map(async (queue) => {
       if (queue.time) {
-        const startTime: number = this.getMinutesFromTime(queue.time.split('-')[0]);
-        const openingTime: number = this.getMinutesFromTime(time.open);
-        const closingTime: number = this.getMinutesFromTime(time.close);
+        // 
+        const startTimeOfTurn: number = this.getMinutesFromTime(queue.time.split('-')[0]);
         const turnDuration = await this.getDuration(queue.name);
-        const endTime = parseInt(startTime.toString()) + parseInt(turnDuration.toString());        
+        const endTimeOfTurn = parseInt(startTimeOfTurn.toString()) + parseInt(turnDuration.toString());    
         // Mark the occupied minutes in the array
-        if (startTime >= openingTime && endTime <= closingTime) {
-          for (let i = startTime; i < endTime; i++) {
+        if (startTimeOfTurn >= openingTime && endTimeOfTurn <= closingTime) {
+          for (let i = startTimeOfTurn; i < endTimeOfTurn; i++) {
             const index = i - openingTime;
             minutesArray[index] = -1; // Mark as occupied
               }  }  } });
@@ -188,95 +231,16 @@ export class TurnsService {
       await Promise.all(promises);
     } catch (error) {
       console.error("An error occurred:", error);
-    }
+    }   
     // check if the turn is available
-    const isAvailable = (i: number) => {
-      const range: number = parseInt(i.toString()) + parseInt(duration.toString());
-      for (let k: number = i; k < range && k < minutesArray.length; k++) {
-        if (minutesArray[k] === -1)
-          return false;
-      }
-      return true; }
-    for (let i = 0; i < minutesArray.length-parseInt(duration.toString()); i += parseInt(duration.toString())) {
-      if (isAvailable(i)) {
-        let newTime = this.getTimeFromMinutes(parseInt(i.toString()) + parseInt(open.toString()));
+    for (let i = 0; i < minutesArray.length; i += parseInt(duration.toString())) {
+      if (this.isAvailable(i,duration,minutesArray)) {
+        let newTime = this.getTimeFromMinutes(parseInt(i.toString()) + parseInt(openingTime.toString()));
         availableTurns.push(newTime);
 
       }
-    }
+    }    
     return availableTurns;
   }
 
- /**
-   * Convert a time string to minutes.
-   *
-   * @param time - The time string to convert.
-   * @returns The time in minutes.
-   */
-  private getMinutesFromTime(time: string): number {
-    const [hours, minutes] = time.split(':').map(Number);
-    return hours * 60 + parseInt(minutes.toString());
-  }
-
- /**
-   * Convert minutes to a time string.
-   *
-   * @param minute - The minutes to convert.
-   * @returns The time string.
-   */
-
-  private getTimeFromMinutes(minute: number): string {
-    const hour: IntegerType = minute / 60;
-    return parseInt(hour.toString()) + ':' + minute % 60;
-  }
-  /**
-   * Calculate the time difference in hours between two time strings.
-   *
-   * @param openTime - The opening time string.
-   * @param closingTime - The closing time string.
-   * @returns The time difference in hours.
-   */
-  private getTimeDifference(openTime: string, closingTime: string): number {
-  
-    
-    const openTimeParts = openTime.split(':').map(Number);
-    const closingTimeParts = closingTime.split(':').map(Number);
-  
-    const openMinutes = openTimeParts[0] * 60 + openTimeParts[1];
-    const closingMinutes = closingTimeParts[0] * 60 + closingTimeParts[1];
-  
-    const timeDifferenceInMinutes = closingMinutes - openMinutes;
-  
-    // Convert the time difference to hours
-    const timeDifferenceInHours = timeDifferenceInMinutes / 60;
-  
-    return timeDifferenceInHours;
-  }
-  
-  
-  
-
-
-  
-
-  
 }
-
-
-
-
-
-
-
-// async update(_id: object, newturn: any) {
-//   try {
-//     const df = await this.findById(_id);
-//     console.log(df);
-//     await this.db.collection<Turn>('Turn').findOneAndUpdate({ _id }, {$set: newturn});
-//     console.log('sucsses update turn');
-//   } catch (error){
-//     console.error('error update turn', error);
-//   }
-// }
-
-
