@@ -1,94 +1,142 @@
-import * as React from 'react';
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
 import axios from 'axios';
 import api from '../../api';
 import config from '../../config ';
-import { Button } from 'react-bootstrap';
 import './turn.css';
-import { format } from 'date-fns';
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { RootState } from '../../../Redux/store'
-
 import { useSelector, useDispatch } from 'react-redux'
 import { setUser } from '../../../Redux/userSlice'
-
-interface Column {
-  id: 'date' | 'time' |'name'| 'TurnType' | 'delete';
-  label: string;
-  minWidth?: number;
-  align?: 'right';
-  format?: (value: number) => string;
+import { Button } from 'react-bootstrap';
+import { Space, Table, message } from 'antd';
+import { Login } from '../../Login/Login';
+import { Alert } from '@mui/material';
+interface TurnsData {
+  id: string;
+  name: string;
+  time: string;
+  date: string;
 }
 
-
-const columns: Column[] = [
-  { id: 'date', label: 'date', minWidth: 170 },
-  { id: 'time', label: 'time', minWidth: 170 },
-  { id: 'name', label: 'name', minWidth: 170 },
-  { id: 'delete', label: 'cancel', minWidth: 170 },
-];
 export const TurnUser = () => {
-  const [view, setView] = useState(0);
-
-  const [rows, setRow] = useState([]);
+  const [turnsData, setTurnsData] = useState<TurnsData[]>([]);
   const user = useSelector((state: RootState) => state.user)
   const dispatch = useDispatch()
+  dispatch(setUser());
+  const onClose = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    console.log(e, 'I was closed.');
+  };
 
- console.log('user',user);
- dispatch(setUser());
- 
- 
+  const validDateForDelete = (id:any,date: any) => {
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate());    
+    const partsA = date.split('/'); 
+    const recordDate = new Date(parseInt(partsA[2]), parseInt(partsA[1]) - 1, parseInt(partsA[0]));
+    if (new Date(recordDate) >= tomorrow) {
+      deleteItem(id);
+      message.success('You cancel your turn')
+    }
+    else {
+    message.error('Its too late for canceling turn!!')
+     
+    }
+  }
+  const sortTurnsData = (data: TurnsData[]): TurnsData[] => {
+    return data.slice().sort((a, b) => {
+      // Split the date strings by '/' assuming the format is "dd/mm/yyyy"
+      const partsA = a.date.split('/');
+      const partsB = b.date.split('/');
+
+      // Create Date objects from the parts in reversed order "yyyy-mm-dd"
+      const dateA = new Date(parseInt(partsA[2]), parseInt(partsA[1]) - 1, parseInt(partsA[0]));
+      const dateB = new Date(parseInt(partsB[2]), parseInt(partsB[1]) - 1, parseInt(partsB[0]));
+
+      // Compare the Date objects
+      if (dateA.getTime() !== dateB.getTime()) {
+        return dateA.getTime() - dateB.getTime(); // Sort by date
+      } else {
+        // If dates are the same, sort by time
+        const [hourA, minuteA] = a.time.split(':').map(Number); // Convert time string to numbers
+        const [hourB, minuteB] = b.time.split(':').map(Number);
+        if (hourA !== hourB) {
+          return hourA - hourB; // Sort by hour
+        } else {
+          return minuteA - minuteB; // Sort by minute
+        }
+      }
+    });
+  }
 
 
 
-  async function getData() {
- 
-    const { data } = await api.get(`${config.api}/turns/${user.email}`);
-    console.log(data)
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const data = await axios.get(`${config.api}/turns/${user.email}`);
+        const filterData = data.data.map((d: any) => {
+          return {
+            id: d._id,
+            date: d.date,
+            time: d.time,
+            name: d.name,
+          }
+        });
 
-    const filterData = data.map((d: any) => {
-      return {
-        id:d._id,
-        date: d.date,
-        time: d.time,
-        name:d.name,
-        caregiver: null
+        const sortedData = sortTurnsData(filterData);
+
+        setTurnsData(sortedData);
+      } catch (error) {
+        console.error('Error fetching turn data:', error);
+      }
+    };
+    getData();
+  }, []);
+
+  const columns = [
+    {
+      title: 'Date',
+      dataIndex: 'date',
+      key: 'date',
+    },
+    {
+      title: 'Time',
+      dataIndex: 'time',
+      key: 'time',
+    },
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
+    },
+    {
+      title: 'DeleteTurn',
+      dataIndex: 'id',
+      key: 'id',
+      render: (id: any, record: any) => (
+        
+        <Button style={{ backgroundColor: '#333' }}
+                 
+          onClick={() => validDateForDelete(id,record.date)}>
+          Cancel Turn
+        </Button>
+      )
+    },
+  ];
+  const deleteItem = (id: any) => {
+    console.log(id);
+    const level = user.email.toString() === config.admin.email ? 'admin' : 'user';
+    console.log(id);
+    axios.delete('http://localhost:3000/turns/delete/' + id, {
+      headers: {
+        'authorization': `Bearer ${user.token}`
+      },
+      params: {
+        roles: level
       }
     })
-    setRow(filterData)
-    setView(1)
-  }
-      
-  
-
-
-  const deleteItem = (index: any) => {
-
-    const deletedRow = rows[index];
-
-    const id =deletedRow['id'];
-    console.log(id);
-    const level= user.email.toString() === config.admin.email? 'admin':'user';
-    console.log(id);
-    axios.delete('http://localhost:3000/turns/delete/'+id,{
-    headers:{ 'authorization': `Bearer ${user.token}`
-  },
-  params:{
-    roles:level
-  
-  }})
-      .then((req:any)=>{
-        rows.splice(index, 1);
-        console.log(req);
-        // Update the state or re-render the table
-        // For example, if you are using React with hooks:
-        setRow([...rows]);
+      .then((req: any) => {
+        const newTurnsData: TurnsData[] = turnsData.filter((turn: any) => turn.id !== id);
+        setTurnsData(newTurnsData)
       }
       )
       .catch((error) => {
@@ -96,81 +144,24 @@ export const TurnUser = () => {
       }
       )
   }
-
- 
-
- 
   return (
     <>
-    <h1> <div>
-        {user.name ? (
-          <p>Welcome, {user.name}!</p>
-        ) : (
-          <p>Token is invalid or missing.</p>
-        )}
-      </div></h1>
-      <button className='buttonTurn' onClick={getData}>הצג את התורות שלי</button>
-      {view == 1 && (
-        <Paper sx={{maxWidth:700,border:3,borderRadius:0,margin:'auto'}}>
-          <TableContainer sx={{ maxHeight: 600 ,maxWidth:700,margin:'50'}}>
-            <Table stickyHeader aria-label="sticky table">
-              <TableHead>
-                <TableRow key={"טבלת תורות"} sx={{borderColor:'red',border:6}}>
-               
+      <h2>
+        <div className='turnsTableBg'>
+          {user.name ? (
+            <>
+              <p style={{ margin: 0, color: '#333', fontSize: 50 }}>Your Turns {user.name}</p>
+              {turnsData.length ? (
 
-                  {/* {columns.map((column) => (
-                    <TableCell
-                      key={column.id}
-                      align={column.align}
-                      style={{ top: 57, minWidth: column.minWidth }}
-                    >
-                      {column.label}
+                <Table className='ant-table-thead' columns={columns} dataSource={turnsData} style={{ width: '70%', margin: 'auto' }} />
+              ) : (<Alert severity="error" style={{ width: '50%', margin: 'auto', fontSize: 24 }} >You  Have no Turns yet</Alert>
+              )}
 
-                    </TableCell>
-                  ))} */}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {rows
-                  .map((row, index) => {
-                    return (
-                      <TableRow key={index} hover role="checkbox" tabIndex={-1} sx={{borderColor:'red',border:6, Padding: 20,marginTop:100}} >
-                        {columns.map((column) => {
-                          const value = row[column.id];
-                          return (
-                            <TableCell className='cell' key={column.id} align={column.align} sx={{borderColor:'black', Padding: 20,marginTop:100}} >
-                              {column.format && typeof value === 'number'
-                                ? column.format(value) 
-                                // : column.id === 'date' // בדוק אם העמודה היא עמודת התאריך
-                                // ? format(new Date(value), 'dd/MM/yyyy')
-                                : value}
-                              {column.id == 'delete' &&
-                                  // <button  onClick={() => deleteItem(index)} >בטל תור<button/>
-                                  <Button className="custom-button"  onClick={() => deleteItem(index)} color='blue'> בטל תור</Button>
-                              }
-                             
-                            </TableCell>
-
-                          );
-                        })}
-                      </TableRow>
-                    );
-                  })}
-
-              </TableBody>
-            </Table>
-          </TableContainer>
-          {/* <TablePagination
-            rowsPerPageOptions={[10, 25, 100]}
-            component="div"
-            count={rows.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          /> */}
-        </Paper>)
-      }
+            </>) : (
+            <Login />
+          )}
+        </div>
+      </h2>
     </>
   );
 }

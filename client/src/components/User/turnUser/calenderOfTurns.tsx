@@ -1,56 +1,56 @@
 import React, { useEffect, useState } from 'react';
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
-import { Alert, Calendar } from 'antd';
-import { AddTreatmentForm } from './addTurn';
-import { useNavigate } from 'react-router-dom';
-import App from '../../../App';
+import { Button, Calendar, Modal } from 'antd';
+import { CalendarOutlined } from '@ant-design/icons';
 
 interface CalendarOfTurnsProps {
-  selectedValue: any; // SomeType הוא הסוג של selectedValue
-  setSelectedValue: (value: any) => void; // SomeType הוא הסוג של הערך שנשמר ב-selectedValue
-  // נוסיף כאן את שאר הפרופס שלך
-  handleFetchFreeQueuesFromChild: () => void; // Define the prop type for the callback function
+  selectedValue: any;
+  setSelectedValue: (value: any) => void;
+  handleFetchFreeQueuesFromChild: () => void;
+  onSelect: (newValue: any) => void;
 }
 
-  export const CalendarOfTurns: React.FC<CalendarOfTurnsProps> = ({selectedValue,setSelectedValue,handleFetchFreeQueuesFromChild}) => {
-    const getCurrentDate = () => dayjs();
-    const [value, setValue] = useState<Dayjs>(getCurrentDate()); // Set the initial state to the current date and time
-    const navigate = useNavigate();
+export const CalendarOfTurns: React.FC<CalendarOfTurnsProps> = ({ selectedValue, setSelectedValue, handleFetchFreeQueuesFromChild, onSelect }) => {
+  const getCurrentDate = () => dayjs();
+  const [value, setValue] = useState<Dayjs>(getCurrentDate());
+  const [visible, setVisible] = useState(false); // State to control the visibility of the modal
 
-    const isDateValid = (date: Dayjs) => {
-      return date.isAfter(getCurrentDate()) && date.day() !== 6;
-    };
-  
-    const onSelect = (newValue: Dayjs) => {
-      if (isDateValid(newValue)) {
-        setValue(newValue);
-        setSelectedValue(newValue);
-        handleFetchFreeQueuesFromChild();
-      } else {
-        console.log('Invalid date selection.');
-      }
-    };
-  
+  const HandelOnSelect = (newValue: Dayjs) => {
+    onSelect(newValue);
+    setVisible(false); // Close the modal after selecting a date
+  };
+
   const onPanelChange = (newValue: Dayjs) => {
     setValue(newValue);
   };
+
   useEffect(() => {
-    // Update the selectedValue to match the current date and time
     setSelectedValue(getCurrentDate());
   }, []);
 
   return (
     <>
-    
-      <Alert message={`You selected date: ${selectedValue?.format('YYYY-MM-DD')}`} />
-      <Calendar value={selectedValue} onSelect={onSelect} onPanelChange={onPanelChange}  />
-      
+      <Button style={{
+        fontSize: 27, height: 68, marginTop: '50px', marginBottom: 20,
+        borderRadius: 14, fontWeight: 'bold', backgroundColor: '#333',
+        color: '#faad14 ', textAlign: 'center', borderColor: '#faad14 ',
+        borderWidth: 'medium',
+      }}
+
+        onClick={() => setVisible(true)}
+        icon={<CalendarOutlined style={{ fontSize: 25 }} />}>
+        Other Date
+      </Button>
+
+      <Modal
+        title="Select a Date"
+        visible={visible}
+        onCancel={() => setVisible(false)}
+        footer={null}
+      >
+        <Calendar value={selectedValue} onSelect={HandelOnSelect} onPanelChange={onPanelChange} />
+      </Modal>
     </>
   );
-  
 };
-
-
-
-

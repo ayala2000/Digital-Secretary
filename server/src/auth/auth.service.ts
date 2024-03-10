@@ -36,23 +36,21 @@ export class AuthService {
     {console.log(respons);
     });
     if (!user) {
-      console.log("not user");
-      
+      console.log("no user");
       throw new UnauthorizedException('no user');
     }
-    console.log("yes user");
-
+    console.log("exist user");
     const payload = { email: user.email,name:user.name };
     return {
       access_token: await this.jwtService.signAsync(payload),
     };
   }
+
+
   async decodeToken(token: string): Promise<any> {
     try {
-
       const decoded = await this.jwtService.verifyAsync(token);
       return decoded;
-      
     } catch (error) {
       // Handle token verification/validation errors
       throw new Error('Invalid token');

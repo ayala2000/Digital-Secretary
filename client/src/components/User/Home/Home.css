@@ -1,0 +1,297 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+
+
+* {
+  font-family: "Dosis", sans-serif;
+}
+
+h2,
+h3,
+h4 {
+  text-transform: uppercase;
+}
+
+
+/* Header */
+h1 {
+  color: #fff;
+}
+
+.hero * {
+  z-index: 10;
+}
+
+.user {
+  background: url('../../../assets/phones.png') no-repeat center center/cover;
+  height: 100vh;
+  position: relative;
+  color: #fff;
+}
+
+.hero .content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+  padding: 0 20px;
+}
+
+.hero .content h1 {
+  font-size: 55px;
+}
+
+.hero .content p {
+  font-size: 23px;
+  max-width: 600px;
+  margin: 20px 0 30px;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.hero * {
+  z-index: 10;
+}
+
+/* section */
+
+/* Home Section c*/
+.title{
+  margin-top: 40px;
+}
+.section-title {
+  font-size: 2.2rem;
+  display: block;
+  padding-bottom: 0.5rem;
+  text-align: center;
+  font-weight: 100;
+  text-transform: uppercase;
+}
+
+.bottom-line {
+  height: 2px;
+  width: 3rem;
+  background: #faad14;
+  display: block;
+  margin: 0 auto 1rem auto;
+}
+
+.lead {
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.text-center {
+  text-align: center;
+  
+}
+
+#home-c .process {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 2.8rem;
+  text-align: center;
+}
+
+
+#home-c .process-icon {
+  border-radius: 50%;
+  background: #faad14;
+  color: #040404;
+  padding: 2rem;
+  font-size: 100px;
+  width: 150px;
+  height: 150px;
+  line-height: 70px;
+  text-align: center;
+  position: relative;
+  transition: all 0.8s;
+}
+
+#home-c .process-icon:hover {
+  background: #333;
+  color: #fff;
+  font-size: 120px;
+  width: 170px;
+  height: 170px;
+  line-height: 90px;
+}
+
+#home-c .process h3{
+  font-size: 25px;
+  font-weight:bold;
+}
+
+#home-c .process p{
+  font-size: 1.4rem;
+
+  
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+
+/* Home Section b*/
+
+#home-b .stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+#home-b .stats li {
+  line-height: 2;
+}
+
+#home-b .stats li.stats-title {
+  font-size: 2.5rem;
+}
+
+#home-b .stats li.stats-number {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+#home-b .stats div {
+  padding: 3rem 0;
+}
+
+#home-b .stats div:nth-child(odd) {
+  background: #f4f4f4;
+  
+}
+
+#home-b .stats div:nth-child(even) {
+  background: #ccc; 
+}
+.icon{
+  font-size: 60px;
+
+}
+
+
+
+.flex-columns.flex-reverse .row {
+  flex-direction: row-reverse;
+}
+
+.flex-columns .row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-top: 25px;
+  margin-bottom: 50px;
+
+
+}
+
+.flex-columns .column {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 100%;
+  flex: 1;
+}
+
+.flex-columns .column .column-1, .flex-columns .column .column-2 {
+  height: 100%;
+}
+
+.flex-columns img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.flex-columns .column-2 {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 3rem;
+}
+
+.flex-columns h2 {
+  font-size: 55px;
+  font-weight: 100;
+}
+
+.flex-columns h4 {
+  margin-bottom: 10px;
+  font-size: 22px;
+}
+
+.flex-columns p {
+  margin: 20px 0;
+  font-size: 29px;
+
+}
+
+/* Section header */
+.section-header {
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.section-header h2 {
+  font-size: 40px;
+  margin: 20px 0;
+}
+
+.section-padding {
+  padding: 20px 20px 40px;
+}
+
+/* Flex grid */
+.flex-grid .row {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0 4px;
+}
+
+.flex-grid .column {
+  flex: 25%;
+  max-width: 25%;
+  padding: 0 4px;
+}
+
+.bg-primary {
+  background: #faad14;
+  color: #fff;
+}
+.btn-outline {
+  background: transparent;
+  border: 1px solid #fff;
+  font-size: 1.8rem;
+}
+
+.column-1{
+  background: url('../../../assets/diary2.jpg') no-repeat center center/cover;
+
+}
+@media (max-width: 768px) {
+  #home-c .process {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    grid-gap: 2.8rem;
+    text-align: center;
+  }
+  #home-b .stats {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    
+  }
+}

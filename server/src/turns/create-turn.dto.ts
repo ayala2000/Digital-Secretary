@@ -7,6 +7,7 @@ export class CreateTurnDto {
     date: string;
     time:string;
     typeOfTurn: String;
+    reminderSent: boolean;
 }
  
 //moment().set({ hours: 10, minutes: 30 })

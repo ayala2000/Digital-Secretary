@@ -6,4 +6,6 @@ export interface Turn {
     date: Date;
     time:String;
     typeOfTurn: String;
+    reminderSent: boolean;
+
 }

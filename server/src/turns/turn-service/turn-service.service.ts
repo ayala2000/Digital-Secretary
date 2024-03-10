@@ -8,71 +8,32 @@ import { Model } from 'mongoose';
 import { CreateTurnDto } from '../create-turn.dto';
 import { ActivityTime } from 'src/ActivityTime/ActivityTime.interface';
 import { TurnType } from 'src/typesOfTurn/turnType.interface';
-
+/**
+ * Service for managing turns in the application.
+ */
 
 
 @Injectable()
 export class TurnsService {
-
-
+  /**
+   * Constructor to inject necessary models.
+   *
+   * @param turnModel - Mongoose model for Turn.
+   * @param activityTimeModel - Mongoose model for ActivityTime.
+   * @param turnTypeModel - Mongoose model for TurnType.
+   */
   constructor(@InjectModel('Turn') private readonly turnModel: Model<Turn>,
-  @InjectModel('ActivityTime') private readonly activityTimeModel: Model<ActivityTime>,
-  @InjectModel('TurnType') private readonly turnTypeModel: Model<TurnType>) { }
-
-
-  // async connectToDatabase(): Promise<MongoClient> {
-  //   const client = await MongoClient.connect('mongodb://127.0.0.1:27017/Users');
-  //   this.db = client.db('Users');
-  //   console.log('Connected to turn');
-
-  //   return client;
-  // }
-  async formatDate(date):Promise<string> {
-    if (!(date instanceof Date)) {
-      // If the input is not a Date object, you can try to parse it
-      date = new Date(date);
-    }
-  
-    if (isNaN(date.getTime())) {
-      // Invalid date
-      return 'Invalid Date';
-    }
-  
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is zero-based
-    const year = date.getFullYear();
-  
-    return `${day}/${month}/${year}`;
-  }
-
-  async getByDate(date: string): Promise<Turn[] | undefined> {
-    const m = this.turnModel.find({ date }).exec();
-    return m;
-  }
-  async getByEmail(email: String): Promise<Turn[] | undefined> {
-    const m = this.turnModel.find({ email }).exec();
-    return m;
-  }
-
-  async getAll(): Promise<Turn[] | undefined> {
-    const arr = this.turnModel.find().exec();
-    return arr;
-  }
-  async getDuration(typeOfTurn:string): Promise<number>{
-    const typeTurn= await this.turnTypeModel.findOne({typeOfTurn});
+    @InjectModel('ActivityTime') private readonly activityTimeModel: Model<ActivityTime>,
+    @InjectModel('TurnType') private readonly turnTypeModel: Model<TurnType>) { }
     
-    const duration=typeTurn.duration;   
-     console.log(duration,'duration');
 
-    return await duration;
-  }
-  //async function that creating object- new record of turns tables.
-  // async addTreatment(createTreatmentDto: CreateTurnDto): Promise<Turn> {
-  //   const createdTreatment = new this.turnModel(createTreatmentDto);
-  //   return createdTreatment.save();
-  // }
-
-  async create(createTurnDto: CreateTurnDto): Promise<Turn> {
+   /**
+   * Create a new turn using the provided DTO.
+   *
+   * @param createTurnDto - The DTO for creating a new turn.
+   * @returns A promise with the created turn.
+   */
+   async create(createTurnDto: CreateTurnDto): Promise<Turn> {
     const createdTurn = new this.turnModel(createTurnDto);
     return createdTurn.save();
   }
@@ -87,230 +48,188 @@ export class TurnsService {
 
 
 
+ /**
+   * Format a given date to a string in "dd/mm/yyyy" format.
+   *
+   * @param date - The date to format.
+   * @returns A formatted date string.
+   */
+  async formatDate(date): Promise<string> {
+    if (!(date instanceof Date)) {
+      date = new Date(date);
+    }
+    if (isNaN(date.getTime())) {
+      return 'Invalid Date';
+    }
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is zero-based
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
   
-  async fillOccupiedMinutes(getdate: Date,duration: number): Promise<any[]> {
-    // Calculate the opening time in minutes (assuming it's a whole hour)
-    // getActivityHouers();
-   const openingTime = 10 * 60;
+  /**
+   * Retrieve turns for a specific date.
+   *
+   * @param date - The date for which turns are retrieved.
+   * @returns A promise with an array of turns or undefined.
+   */
 
-    // Calculate the closing time in minutes (6 hours after opening time)
-   const closingTime = openingTime + 6 * 60;
+  async getByDate(date: string): Promise<Turn[] | undefined> {
+    const m = this.turnModel.find({ date }).exec();
+    return m;
+  }
+   /**
+   * Retrieve turns for a specific email.
+   *
+   * @param email - The email for which turns are retrieved.
+   * @returns A promise with an array of turns or undefined.
+   */
+  async getByEmail(email: String): Promise<Turn[] | undefined> {
+    const m = this.turnModel.find({ email }).exec();
+    return m;
+  }
+ /**
+   * Retrieve all turns in the system.
+   *
+   * @returns A promise with an array of all turns or undefined.
+   */
+  async getAll(): Promise<Turn[] | undefined> {
+    const arr = this.turnModel.find().exec();
+    return arr;
+  }
 
+    /**
+   * Retrieve the duration of a specified turn type.
+   *
+   * @param typeOfTurn - The type of turn for which duration is retrieved.
+   * @returns A promise with the duration of the turn type.
+   */
+
+  async getDuration(typeOfTurn: string): Promise<number> {
+    const typeTurn = await this.turnTypeModel.findOne({ typeOfTurn });
+
+    const duration = typeTurn.duration;
+    console.log(duration, 'duration');
+
+    return await duration;
+  }
+  /**
+   * Retrieve opening and closing times for a specific day.
+   *
+   * @param day - The day for which times are retrieved.
+   * @returns A promise with an object containing open and close times.
+   * @throws Error if no active time is found for the specified day.
+   */
+
+  async getTimeByDay(day: number): Promise<{ open:string, close:string }> {
+    const activeTime = await this.activityTimeModel.findOne({ day }).exec();
+  if (!activeTime) {
+    throw new Error('No active time found for the specified dayOfWeek');
+  }
+    const open=activeTime.openingHours[0];
+    const close = activeTime.closingHours[0]; 
+    return { open, close };
+  }
+  
+ /**
+   * Convert a time string to minutes.
+   * @param time - The time string to convert.
+   * @returns The time in minutes.
+   */
+ private getMinutesFromTime(time: string): number {
+  const timesArry = time.split(':').map(Number);
+  return timesArry[0] * 60 + timesArry[1];
+}
+
+/**
+ * Convert minutes to a time string.
+ * @param minute - The minutes to convert.
+ * @returns The time string.
+ */
+
+private getTimeFromMinutes(minute: number): string {
+  const hour: IntegerType = minute / 60;
+  const minutes=minute %60;
+  const newHour=hour<10?'0'+parseInt(hour.toString()):parseInt(hour.toString());
+  const newMinute=minutes<10?'0' + parseInt(minutes.toString()): parseInt(minutes.toString());
+  return newHour + ':' + newMinute;
+}
+/**
+ * Calculate the time difference in hours between two time strings.
+ *
+ * @param openTime - The opening time string.
+ * @param closingTime - The closing time string.
+ * @returns The time difference in hours.
+ */
+private getTimeDifference(openTime: any, closingTime: any): number {
+  const timeDifferenceInMinutes = Math.abs(openTime - closingTime);
+  // Convert the time difference to hours
+  const timeDifferenceInHours = timeDifferenceInMinutes / 60;
+  return timeDifferenceInHours;
+}
+
+private isAvailable = (i: number, duration:any,minutesArray:any) => {
+  const range: number = parseInt(i.toString()) + parseInt(duration.toString());
+  for (let k: number = i; k < range && k < minutesArray.length; k++) {
+    if (minutesArray[k] === -1)
+      return false;
+  }
+  return true; }
+
+  /**
+   * Calculate and return available turn times for a given date and duration.
+   *
+   * @param getdate - The date for which available turns are calculated.
+   * @param duration - The duration of each turn.
+   * @returns A promise with an array of available turn times.
+   */
+
+  async fillOccupiedMinutes(getdate: Date, duration: number): Promise<any[]> {
+    //retrieve the day and the times from the date 
+    const dayFromDate = getdate.getDay()+1;
+    const time= await this.getTimeByDay(dayFromDate);
+    const openingTime = this.getMinutesFromTime(time.open);
+    const closingTime = this.getMinutesFromTime(time.close);
+    const difference=this.getTimeDifference(openingTime,closingTime);
     // Create an array of minutes for the entire operating time
-    const minutesArray = Array(60 * 6).fill(0);
-    const availableTurns=[];
-    // console.log(minutesArray);
-    
+    const minutesArray = Array(Math.ceil(60 * difference)).fill(0);
+    const availableTurns = [];
     // Get the occupied queues for the given date
-    console.log(getdate);
     const date = await this.formatDate(getdate);
-    console.log(date,'get\n date');
-    
     const occupiedQueues = await this.turnModel.find({ date });
-    console.log(occupiedQueues,'occupiedQueues');
-    
     // Iterate through the occupied queues and mark the corresponding minutes as occupied
-    const promises = occupiedQueues.map( async (queue) => {
-      if(queue.time){
-      const startTime:number = this.getMinutesFromTime(queue.time.split('-')[0]);
-      const openingTime:number = this.getMinutesFromTime('10:00');
-      const closingTime:number = this.getMinutesFromTime('16:00');
-      const turnDuration =   await this.getDuration(queue.name);
-      console.log(turnDuration,'hftyuubr67yxzazsedrftgyhujikolkijuhygtfrdeswaqw\nhufufu');
-      
-      const endTime =  parseInt(startTime.toString()) +  parseInt(turnDuration.toString());
-      console.log("arry",getdate.getDay());
-      // console.log("minutesArray");
-      // console.log("start",startTime);
-      // console.log("end",endTime);
-      // //console.log("func",this.getTimeFromMinutes(886));
-      
-      // Mark the occupied minutes in the array
-      if(startTime>=openingTime&&endTime<= closingTime){
-          for (let i = startTime; i < endTime; i++) {
+    const promises = 
+    occupiedQueues.map(async (queue) => {
+      if (queue.time) {
+        // ממיר את זמן תחילת התור לדקות
+        const startTimeOfTurn: number = this.getMinutesFromTime(queue.time.split('-')[0]);
+        //שולף מטבלת סוגי התורים את אורך התור בהתאמה לסוג התור הנוכחי
+        const turnDuration = await this.getDuration(queue.name);
+        // חישוב זמן סיום התור בדקות על פי זמן התחלה + משך התור
+        const endTimeOfTurn = parseInt(startTimeOfTurn.toString()) + parseInt(turnDuration.toString());    
+        // Mark the occupied minutes in the array
+        if (startTimeOfTurn >= openingTime && endTimeOfTurn <= closingTime) {
+          for (let i = startTimeOfTurn; i < endTimeOfTurn; i++) {
             const index = i - openingTime;
             minutesArray[index] = -1; // Mark as occupied
-          }}
-    }});
+              }  }  } });
     try {
       await Promise.all(promises);
     } catch (error) {
       console.error("An error occurred:", error);
-    }
+    }   
     // check if the turn is available
-    const isAvailable=(i:number)=> {
-      // console.log("isAvailable",i+duration);
-      
-      const range:number=parseInt(i.toString())+parseInt(duration.toString());
-      for(let k:number = i; k<range&&k<minutesArray.length; k++){
-        //  console.log(k,i);
-        if(minutesArray[k]===-1)
-         return false;
-      }
-      return true;
-    }
-   
-
-
-    for(let i =0; i<minutesArray.length; i+=parseInt(duration.toString())){
-      // console.log("isFor");
-      // console.log(i,"iiiiiiiiii")
-      if(isAvailable(i)){
-        let newTime = this.getTimeFromMinutes(parseInt(i.toString())+parseInt(openingTime.toString()));
-        // console.log("newTime",newTime);
+    for (let i = 0; i < minutesArray.length; i += parseInt(duration.toString())) {
+      //במעבר על המערך מחפש תורות פנויים ומוסיף אותם למערך חדש של תורים פנויים
+      if (this.isAvailable(i,duration,minutesArray)) {
+        //ממיר בחזרה מהדקות במערך לזמן
+        let newTime = this.getTimeFromMinutes(parseInt(i.toString()) + parseInt(openingTime.toString()));
         availableTurns.push(newTime);
-        // console.log("availableTurns",availableTurns);
-        
-    }
-  }
 
-
-   // console.log(minutesArray);
-
-    // Remove the occupied minutes from the array if the queue duration is less than the total duration
-    // if ( duration < minutesArray.length ) {
-    //   const availableMinutesArray = minutesArray.filter(minute => minute !== -1);
-    //   return availableMinutesArray.slice(0, duration);
-    // }
-    console.log(minutesArray);
-    console.log(availableTurns);
-    
+      }
+    }    
     return availableTurns;
   }
- 
-
-  private getMinutesFromTime(time: string): number {
-    const [hours, minutes] = time.split(':').map(Number);
-    return hours * 60 + parseInt(minutes.toString());
-  }
-  private getTimeFromMinutes(minute: number): string {
-    const hour:IntegerType = minute / 60;
-    return parseInt(hour.toString(), 10)+':'+ minute % 60;
-  }
-  private getActivityHouers(date:Date):string {
-    const daysOfWeek= date.getDay();
-
-    return 'fff';
-
-  }
 
 
-  async getAvailableDates(duration: any): Promise<Date[]> {
-    const currentDate = new Date();
-    const sixMonthsFromNow = new Date();
-    sixMonthsFromNow.setMonth(currentDate.getMonth() + 1);
-
-    const datesInTable = await this.turnModel.distinct('date', {
-      date: {
-        $gte: currentDate,
-        $lt: sixMonthsFromNow,
-      },
-    });
-    console.log("datesInTable", datesInTable)
-
-    const allDates = [];
-    const allTimes = [];
-
-    for (
-      let date = new Date(currentDate);
-      date < sixMonthsFromNow;
-      date.setDate(date.getDate() + 1)) {
-
-      const isInTable = datesInTable.some(
-        (tableDate) => tableDate.getDate() === date.getDate(),
-      );
-
-      if (!isInTable) {
-        allDates.push(new Date(date));
-      }
-
-      else {
-        allTimes.push(new Date(date))
-      }
-    }
-    console.log("allDates", allDates)
-    return allDates;
-  }
-
-  async getFreeQueues(date: Date, queueDuration: number): Promise<any[]> {
-    console.log("arry",date.getDay());
-
-    const openingTime = new Date(date).setUTCHours(10, 0, 0); // Set the opening time to 10:00
-    const closingTime = new Date(date).setUTCHours(16, 0, 0); // Set the closing time to 16:00
-    const closingDate = new Date(closingTime);
-    console.log("closingDate", closingDate)
-    const duration = new Date().setMinutes(queueDuration);
-
-    console.log(duration);
-    console.log("arry" ,date.getDay());
-    //מערך המכיל את כל התורים שבתאריך הנוכחי
-    const occupiedQueues = await this.turnModel.find({
-      date: { $eq: date },
-    });
-    console.log(occupiedQueues);
-
-
-
-    const freeQueues = [];
-    let currentTime = new Date(openingTime);//check if time empty
-    const localOffset = currentTime.getTimezoneOffset();
-
-    // Calculate the local date by adding the offset to the UTC date
-    const localDate = new Date(currentTime.getTime() + (localOffset * 60 * 1000));
-
-    // Now you can work with the local date
-    console.log(localDate);
-    console.log("currentTime", currentTime)
-    console.log("queueDuration", queueDuration);//duration
-    while (currentTime < closingDate) {
-      console.log("cur", currentTime, currentTime.getMinutes());
-      let endTime2 = new Date(currentTime);
-      console.log("endTime2", endTime2);
-      let Duration = parseInt(queueDuration.toString());
-      endTime2.setMinutes(
-        currentTime.getMinutes() + Duration);
-      console.log("endTime2", endTime2);
-
-      const endTime = new Date(endTime2);
-      console.log(endTime, 'endTime');
-
-      //console.log(closingTime, 'endTime');
-
-
-
-      // if (!occupiedQueues.some((queue) =>
-      //   new Date(queue.time).getTime() <= currentTime.getTime() &&
-      //   new Date(queue.time).getTime() >= endTime2.getTime(),
-      // )) {
-
-      //   freeQueues.push(currentTime);
-
-
-      // }
-      console.log(freeQueues, 'freeQueues');
-
-      currentTime = endTime2;
-    }
-
-    return freeQueues;
-  }
 }
-
-
-
-
-
-
-
-  // async update(_id: object, newturn: any) {
-  //   try {
-  //     const df = await this.findById(_id);
-  //     console.log(df);
-  //     await this.db.collection<Turn>('Turn').findOneAndUpdate({ _id }, {$set: newturn});
-  //     console.log('sucsses update turn');
-  //   } catch (error){
-  //     console.error('error update turn', error);
-  //   }
-  // }
-
-

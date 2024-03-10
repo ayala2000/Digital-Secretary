@@ -1,9 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
 import userReducer from './userSlice';
+import turnReducer from './turnSlice';
+
 
 export const store = configureStore({
   reducer: {
     user: userReducer,
+    turns: turnReducer,
   },
 });
 

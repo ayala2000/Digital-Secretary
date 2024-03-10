@@ -7,14 +7,19 @@ interface UserState {
   name: string;
   email: string;
   token: string;
+  isAuthenticated:boolean;
   
 }
+
 
 const initialState: UserState = {
   name: '',
   email: '',
-  token: ''
+  token: '',
+  isAuthenticated: false
 };
+
+
 
 const userSlice = createSlice({
   name: 'user',
@@ -36,9 +41,8 @@ const userSlice = createSlice({
             state.name=decodedToken.name;
             // if(decodedToken.email!== config.admin.email)
             state.email=decodedToken.email;
-    
-           
-            
+            state.isAuthenticated = true;
+     
           } catch (error: any) {
             console.error('Token verification failed:', error.message);
           }
@@ -46,6 +50,7 @@ const userSlice = createSlice({
 
      
     },
+    
   },
 });
 

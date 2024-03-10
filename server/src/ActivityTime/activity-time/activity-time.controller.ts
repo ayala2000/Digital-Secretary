@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, NotFoundException, Param, Post, Put } from '@nestjs/common';
 import { CreateTurnDto } from 'src/turns/create-turn.dto';
 import { CreateTurnTypeDto } from 'src/typesOfTurn/createTurnTypeDto';
 import { CreateActivityTimeDto } from '../ActivityTime.dto';
 import { ActivityTimeService } from './activity-time.service';
+import { UpdateActivityTimeDto } from './updateActivityTime.dto';
 
 @Controller('activity-time')
 export class ActivityTimeController {
@@ -25,11 +26,13 @@ export class ActivityTimeController {
   
       return turnsType;
     }
-    @Put('put/:id')
-    async update(@Param('id')id:string,@Body()newTurn: CreateTurnDto) {
-     // const { id, name, date, typeOfTurn } = createTurnDto;
-      const turn = await this.activityTimeService.update(id, newTurn);
-  
-      return turn;
+    @Put('/:day')
+    async updateByDay(@Param('day') day: number, @Body() updateActivityTimeDto: UpdateActivityTimeDto) {
+      const updatedActivity = await this.activityTimeService.updateByDay(day, updateActivityTimeDto);
+      if (!updatedActivity) {
+        throw new NotFoundException(`ActivityTime with day ${day} not found`);
+      }
+      return updatedActivity;
     }
+    
 }
