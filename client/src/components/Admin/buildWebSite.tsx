@@ -1,26 +1,22 @@
 import React, { useState, ChangeEvent } from 'react';
 import axios from 'axios';
 import config from '../config ';
-import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import {
   Form,
   Input,
   Button,
   Select,
+  message,
 } from 'antd';
-import { Button as But } from '@mui/material';
+import { FileTextOutlined } from '@ant-design/icons';
 const { Option } = Select;
-
-
 const layout = {
   labelCol: { span: 8 },
   wrapperCol: { span: 16 },
-
 };
 
 interface setting {
@@ -41,14 +37,9 @@ const validateMessages = {
     range: '${label} must be between ${min} and ${max}',
   },
 };
-/* eslint-enable no-template-curly-in-string */
-
-
-
 export const BuildWebSite: React.FC = () => {
   const [form] = Form.useForm();
-
-  
+  const [open, setOpen] = React.useState(false);
   const [id, setId] = useState({});
   const [setting, setSetting] = useState<setting>({
     webName: 'Digital secretary',
@@ -59,14 +50,12 @@ export const BuildWebSite: React.FC = () => {
   });
 
   const onFinish = (values: any) => {
-    console.log(values,'values');
+    console.log(values, 'values');
     setSetting(values.user);
     handleBuildSetting(values.user);
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log("dgddgdh");
-
     const { name, value } = e.target;
     setSetting({ ...setting, [name]: value });
   };
@@ -82,19 +71,13 @@ export const BuildWebSite: React.FC = () => {
   getData();
 
   const handleBuildSetting = (setting: any) => {
- 
     axios.put(`${config.api}/build/${id}`, setting).then(() => {
-      alert('you update your setting succesfully');
-    }
-    ) // שנה את ה-URL לכתובת הנכונה שבשרת
+      message.success('you update your setting succesfully');
+    }) 
       .catch((error) => {
         console.error('Error adding turn:', error);
       });
   };
-
-
-  const [open, setOpen] = React.useState(false);
-
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -111,78 +94,62 @@ export const BuildWebSite: React.FC = () => {
     </Form.Item>
   );
 
-
   return (
     <React.Fragment>
-
-      <But variant="outlined" onClick={handleClickOpen}>
-        fill my details
-      </But>
-      <Dialog open={open} onClose={handleClose} sx={{ padding: 5, width: '100%', opacity:0.9 }}>
+      <FileTextOutlined className="process-icon my-2"
+        onClick={handleClickOpen}/>
+      <Dialog open={open} onClose={handleClose} sx={{ padding: 5, width: '100%', opacity: 0.9, backgroundColor: '#333' }}>
         <DialogTitle>My details</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-
-          </DialogContentText>
           <div>
-
             <Form
               {...layout}
               form={form}
               name="register"
               onFinish={onFinish}
-              initialValues={{  prefix: '86' }}
-              style={{ maxWidth: 600,opacity:1 }}
+              initialValues={{ prefix: '86' }}
+              style={{ maxWidth: 600, opacity: 1 }}
               scrollToFirstError
               validateMessages={validateMessages}>
-              <label > My name:</label>
-
+              <label > My WebSite Name:</label>
               <Form.Item name={['user', 'webName']} rules={[{ required: true }]}>
-
                 <Input
                   type="text"
-
                   value={setting.webName}
-                  style={{width:300,height:35, color:'white',backgroundColor:'rgb(0, 33, 64)'}}
+                  style={{ width: 300, height: 35, backgroundColor: '#fff' }}
                 />
               </Form.Item>
-              <label > My text:</label>
-
+              <label > My text: This text will be displayed on the home page of the website</label>
               <Form.Item name={['user', 'myText']} rules={[{ required: true }]}>
-
                 <Input.TextArea
                   value={setting.myText}
-                showCount maxLength={100} 
-                  style={{width:300,height:35}}
+                  showCount maxLength={500}
+                  style={{ width: 300, height: 65, backgroundColor: '#fff' }}
                 />
               </Form.Item>
               <label > Where is me?</label>
               <Form.Item name={['user', 'adress']} rules={[{ required: true }]}>
-
                 <Input
                   type="text"
-
                   value={setting.adress}
                   onChange={handleInputChange}
-                  style={{width:300,height:35}}
+                  style={{ width: 300, height: 35 }}
                 />
               </Form.Item>
               <h3 color='rgb(0, 33, 64)'>contact:</h3>
               <label > Phone Number</label>
               <Form.Item
                 name={['user', 'phone']}
-
                 rules={[{ required: true, message: 'Please input your phone number!' }]}
               >
                 <Input addonBefore={prefixSelector}
-                 value={setting.phone} 
-                 onChange={handleInputChange} 
-                 style={{width:300,height:35}} />
+                  value={setting.phone}
+                  onChange={handleInputChange}
+                  style={{ width: 300, height: 35 }} />
               </Form.Item>
               <label > Email</label>
               <Form.Item
                 name="email"
-
                 rules={[
                   {
                     type: 'email',
@@ -194,17 +161,14 @@ export const BuildWebSite: React.FC = () => {
                   },
                 ]}
               >
-                <Input value={setting.email} onChange={handleInputChange}  style={{width:300,height:35}}/>
+                <Input value={setting.email} onChange={handleInputChange} style={{ width: 300, height: 35 }} />
               </Form.Item>
-
-              <Button type="primary" htmlType="submit"  style={{width:300,height:35,backgroundColor:'rgb(0, 33, 64)'}} > SEND  </Button>
+              <Button type="primary" htmlType="submit" style={{ width: 300, height: 35, backgroundColor: '#333' }} > SEND  </Button>
             </Form>
           </div>
-
         </DialogContent>
-        <DialogActions sx={{m:'auto'}}>
-
-          <Button onClick={handleClose} style={{color:'rgb(0, 33, 64)'}}>Close</Button>
+        <DialogActions sx={{ m: 'auto' }}>
+          <Button onClick={handleClose} style={{ color: '#333' }}>Close</Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>

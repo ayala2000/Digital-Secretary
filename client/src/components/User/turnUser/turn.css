@@ -1,18 +1,44 @@
 .custom-button{
-    background-color: #001529;
+    background-color: #333;
     color: rgb(255, 255, 255);
 }
-
-
 .cell{
     border-color: aquamarine;
     border: 8cm;
 }
 .buttonTurn{
     width: 45%;
-    background-color: #001529;
+    background-color:#333;
     color: azure;
     border-radius: 0;
     border: 0;
 
 }
+
+:where(.css-dev-only-do-not-override-qgg3xn).ant-table-wrapper
+ .ant-table-thead >tr>th
+ , 
+:where(.css-dev-only-do-not-override-qgg3xn)
+.ant-table-wrapper .ant-table-thead >tr>td
+ {   
+     color: #faad14 !important;
+    background: #333 !important;
+    font-size:25px !important;
+   text-align: center !important;
+    /* border-bottom: 1px solid #f11414;
+    padding: 145px 3px; */
+}
+tbody{
+font-weight: 500;
+font-size: 18px !important;
+color: #333;
+text-align: center;
+}
+.turnsTableBg{
+    background: url('../../../assets/computer.jpg') no-repeat center center/cover ;
+    /* height: 100vh; */
+    position: relative;
+    color: #fff;
+    opacity: 0.8;
+  }
+

@@ -2,13 +2,23 @@
 .ant-table-wrapper .ant-table-thead >tr>td
  {   
      color: #faad14 !important;
-    background: #001529 !important;
-    font-size:15pxx-small !important;
-   
-    /* border-bottom: 1px solid #f11414;
-    padding: 145px 3px; */
+    background: #333 !important;
+    font-size:17px !important;
+    font-weight: 600 !important;
+    text-align: center !important;
 }
+
 tbody{
-font-weight: bold;
-color: #001529;
+font-size: 15px !important;
+font-weight: 400;
+color: #333;
+text-align: center;
+}
+
+.borderBottom{
+    height: 2px;
+    width: 3rem;
+    background: #ffbc00;
+    display: block;
+    margin: 0 auto 1rem auto;
 }

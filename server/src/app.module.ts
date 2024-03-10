@@ -17,12 +17,7 @@ import { InitializerService } from './initializer.service';
 import { BuildModule } from './build/build.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
-import { MailController } from './mail/mail.controller';
-import { MailService } from './mail/mail.service';
-// import { MailModule } from './mail/mail.module';
 import { BullModule } from '@nestjs/bull';
-import { MessageService } from './massege/message.service';
-import { MessageController } from './massege/message.controller';
 import { MassegeModule } from './massege/message.module';
 @Module({
   imports: [
@@ -32,9 +27,6 @@ import { MassegeModule } from './massege/message.module';
     AuthModule,
     PassportModule,
     TurnTypeModule,
-    // ActivityTimeSeedService,
-    // InitializerService,
-    //addTurnModule,
     ActivityTimeModule,
     BuildModule,
     JwtModule.register({
@@ -77,10 +69,7 @@ import { MassegeModule } from './massege/message.module';
       },
     }),
    
-    MassegeModule,
-
-    // MailModule,
-    
+    MassegeModule,    
   ],
   
   controllers: [AppController],

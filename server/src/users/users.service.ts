@@ -9,8 +9,7 @@ import { CreateUserDto } from './create-user.dto';
 
 @Injectable()
 export class UsersService {
-  private client: MongoClient;
-  private db:Db;
+
 
   constructor(@InjectModel('User') private readonly userModel: Model<User>) {}
 

@@ -56,11 +56,9 @@ export class TurnsService {
    */
   async formatDate(date): Promise<string> {
     if (!(date instanceof Date)) {
-      // If the input is not a Date object, you can try to parse it
       date = new Date(date);
     }
     if (isNaN(date.getTime())) {
-      // Invalid date
       return 'Invalid Date';
     }
     const day = String(date.getDate()).padStart(2, '0');
@@ -125,25 +123,16 @@ export class TurnsService {
 
   async getTimeByDay(day: number): Promise<{ open:string, close:string }> {
     const activeTime = await this.activityTimeModel.findOne({ day }).exec();
-    
   if (!activeTime) {
-    // Handle the case where no active time is found for the specified dayOfWeek
     throw new Error('No active time found for the specified dayOfWeek');
   }
-
     const open=activeTime.openingHours[0];
-    console.log('in getTime open day',open);
-    
-    const close = activeTime.closingHours[0];
-    console.log('in getTime open day',close);
-
-    
+    const close = activeTime.closingHours[0]; 
     return { open, close };
   }
   
  /**
    * Convert a time string to minutes.
-   *
    * @param time - The time string to convert.
    * @returns The time in minutes.
    */
@@ -154,14 +143,16 @@ export class TurnsService {
 
 /**
  * Convert minutes to a time string.
- *
  * @param minute - The minutes to convert.
  * @returns The time string.
  */
 
 private getTimeFromMinutes(minute: number): string {
   const hour: IntegerType = minute / 60;
-  return parseInt(hour.toString()) + ':' + minute % 60;
+  const minutes=minute %60;
+  const newHour=hour<10?'0'+parseInt(hour.toString()):parseInt(hour.toString());
+  const newMinute=minutes<10?'0' + parseInt(minutes.toString()): parseInt(minutes.toString());
+  return newHour + ':' + newMinute;
 }
 /**
  * Calculate the time difference in hours between two time strings.
@@ -171,15 +162,11 @@ private getTimeFromMinutes(minute: number): string {
  * @returns The time difference in hours.
  */
 private getTimeDifference(openTime: any, closingTime: any): number {
-
   const timeDifferenceInMinutes = Math.abs(openTime - closingTime);
-
   // Convert the time difference to hours
   const timeDifferenceInHours = timeDifferenceInMinutes / 60;
-
   return timeDifferenceInHours;
 }
-
 
 private isAvailable = (i: number, duration:any,minutesArray:any) => {
   const range: number = parseInt(i.toString()) + parseInt(duration.toString());
@@ -198,15 +185,12 @@ private isAvailable = (i: number, duration:any,minutesArray:any) => {
    */
 
   async fillOccupiedMinutes(getdate: Date, duration: number): Promise<any[]> {
-    // Calculate the opening time in minutes (assuming it's a whole hour)
-
     //retrieve the day and the times from the date 
     const dayFromDate = getdate.getDay()+1;
     const time= await this.getTimeByDay(dayFromDate);
-    const openingTime = this.getMinutesFromTime(time.open);;
+    const openingTime = this.getMinutesFromTime(time.open);
     const closingTime = this.getMinutesFromTime(time.close);
     const difference=this.getTimeDifference(openingTime,closingTime);
-
     // Create an array of minutes for the entire operating time
     const minutesArray = Array(Math.ceil(60 * difference)).fill(0);
     const availableTurns = [];
@@ -217,9 +201,11 @@ private isAvailable = (i: number, duration:any,minutesArray:any) => {
     const promises = 
     occupiedQueues.map(async (queue) => {
       if (queue.time) {
-        // 
+        // ממיר את זמן תחילת התור לדקות
         const startTimeOfTurn: number = this.getMinutesFromTime(queue.time.split('-')[0]);
+        //שולף מטבלת סוגי התורים את אורך התור בהתאמה לסוג התור הנוכחי
         const turnDuration = await this.getDuration(queue.name);
+        // חישוב זמן סיום התור בדקות על פי זמן התחלה + משך התור
         const endTimeOfTurn = parseInt(startTimeOfTurn.toString()) + parseInt(turnDuration.toString());    
         // Mark the occupied minutes in the array
         if (startTimeOfTurn >= openingTime && endTimeOfTurn <= closingTime) {
@@ -234,7 +220,9 @@ private isAvailable = (i: number, duration:any,minutesArray:any) => {
     }   
     // check if the turn is available
     for (let i = 0; i < minutesArray.length; i += parseInt(duration.toString())) {
+      //במעבר על המערך מחפש תורות פנויים ומוסיף אותם למערך חדש של תורים פנויים
       if (this.isAvailable(i,duration,minutesArray)) {
+        //ממיר בחזרה מהדקות במערך לזמן
         let newTime = this.getTimeFromMinutes(parseInt(i.toString()) + parseInt(openingTime.toString()));
         availableTurns.push(newTime);
 
@@ -242,5 +230,6 @@ private isAvailable = (i: number, duration:any,minutesArray:any) => {
     }    
     return availableTurns;
   }
+
 
 }

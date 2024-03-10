@@ -4,9 +4,9 @@ import { TurnSchema } from '../turn.schema';
 import { TurnsService } from '../turn-service/turn-service.service';
 import { TurnController } from './turn-controller.controller';
 import { ActivityTimeService } from 'src/ActivityTime/activity-time/activity-time.service';
-import { ActivityTimeSchema } from 'src/ActivityTime/ActivityTime.schema';
 import { TurnsTypeService } from 'src/typesOfTurn/turns-type/turns-type.service';
 import { TurnTypeSchema } from 'src/typesOfTurn/turnType.schema';
+import { ActivityTimeSchema } from 'src/ActivityTime/ActivityTime.schema';
 
 @Module({
   imports: [

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
+import { log } from 'console';
 
 @Injectable()
 export class MailService {
@@ -7,6 +8,8 @@ export class MailService {
     constructor(private readonly mailerService: MailerService) { }
 
     public sendEmail(to: string, subject: string, text: string): void {
+        console.log(to+'to');
+        
         this.mailerService
             .sendMail({
                 to:to, // list of receivers

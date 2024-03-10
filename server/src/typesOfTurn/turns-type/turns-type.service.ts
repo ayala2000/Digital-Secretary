@@ -14,32 +14,19 @@ export class TurnsTypeService {
 
   constructor(@InjectModel('TurnType') private readonly turnTypeModel: Model<TurnType>) { }
 
+  async getAll(): Promise<TurnType[] | undefined> {
 
-  // async connectToDatabase(): Promise<MongoClient> {
-  //   const client = await MongoClient.connect('mongodb://127.0.0.1:27017/Users');
-  //   this.db = client.db('Users');
-  //   console.log('Connected to turnstype');
+    const arr = this.turnTypeModel.find().exec();
+    console.log(arr);
 
-  //   return client;
-  // }
-
-  // async findByEmail(email: string): Promise<Turn | undefined> {
-  //   return this.db.collection<Turn>('Turn').findOne({ email });
-  // }
-
-async getAll(): Promise<TurnType[] | undefined> {
-    
-     const arr = this.turnTypeModel.find().exec();
-     console.log(arr);
-     
     return arr;
   }
 
   //async function that creating object- new record of turns tables.
 
   async create(
-    createTurnTypeDto: CreateTurnTypeDto ): Promise<TurnType> {
-   
+    createTurnTypeDto: CreateTurnTypeDto): Promise<TurnType> {
+
     const createdTurn = new this.turnTypeModel(createTurnTypeDto);
     return createdTurn.save();
   }
@@ -66,4 +53,12 @@ async getAll(): Promise<TurnType[] | undefined> {
     }
   }
 
+  async deleteTurnByName(name: string): Promise<TurnType | null> {
+    try {
+      return await this.turnTypeModel.findOneAndDelete({ typeOfTurn: name }).exec();
+    } catch (error) {
+      console.error('Error deleting turn by name:', error);
+      throw new Error('Failed to delete turn by name');
+    }
+  }
 }

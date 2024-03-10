@@ -1,0 +1,5 @@
+:where(.css-dev-only-do-not-override-qgg3xn).ant-card .ant-card-meta-detail >div:not(:last-child) {
+    margin-bottom: 8px;
+    font-size: 30px;
+    font-weight: bold;
+  }

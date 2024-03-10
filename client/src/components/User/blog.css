@@ -1,17 +1,48 @@
-.days{
-    color:#001529;
-    font-weight: bold;
+.days {
+  color: #faad14;
+  font-weight: bold;
 }
-.groupOpenHour{
-    color:#001529;
-    text-align: center;
-    font-size: large;
-    margin: auto;
-
- font-style: italic;
+.groupOpenHour {
+  color: #ffffff;
+  text-align: center;
+  font-size: 18px;
+  font-style: italic;
+  display: flex;
+  flex-direction: row;
+  padding: 10px;
+  justify-content: space-between;
 }
-.openHour{
- margin: auto;
-
-
+.openHour {
+  margin: auto;
+  max-height: 200px;
+  column-count: 2;
+  column-gap: 20px;
+  overflow: hidden;
+}
+.flexBlog {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.flexBlog .flex1 h2 {
+  text-align: center;
+}
+.flexBlog .flex2 {
+  padding-left: 100px;
+  text-align: center;
+  width: 50%;
+}
+@media (max-width: 768px) {
+  .openHour {
+    column-count: 1;
+  }
+}
+@media (max-width: 768px) {
+  .flexBlog {
+    flex-direction: column;
+    align-items: center;
+  }
+  .flexBlog .flex2 {
+    padding-left: 0;
+  }
 }

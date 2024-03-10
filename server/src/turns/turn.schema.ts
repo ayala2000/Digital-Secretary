@@ -8,5 +8,7 @@ export const TurnSchema = new mongoose.Schema({
   name: String,
   date: String,
   time:String,
-  typeOfTurn: String
+  typeOfTurn: String,
+  reminderSent: Boolean,
+
 });

@@ -1,36 +1,35 @@
 /* CalendarOfTurns.css */
 /* Customize the calendar's container */
 .calendar-container {
-    background-color: #f0f0f0;
-    padding: 20px;
-  }
-  
-  /* Customize the calendar header */
-  .calendar-header {
-    background-color: #1890ff;
-    color: #fff;
-    font-size: 20px;
-    text-align: center;
-    padding: 10px;
-  }
-  
-  /* Customize the calendar body */
-  .ant-fullcalendar-body {
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  /* Customize the cells in the calendar */
-  .ant-fullcalendar-date {
-    font-size: 14px;
-  }
-  
-  /* Customize the selected date */
-  .ant-fullcalendar-value {
-    background-color: #1890ff;
-    color: #fff;
-    border-radius: 5px;
-    font-weight: bold;
-  }
-  
+  background-color: #f0f0f0;
+  padding: 20px;
+}
+
+/* Customize the calendar header */
+.calendar-header {
+  background-color: #1890ff;
+  color: #fff;
+  font-size: 20px;
+  text-align: center;
+  padding: 10px;
+}
+
+/* Customize the calendar body */
+.ant-fullcalendar-body {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Customize the cells in the calendar */
+.ant-fullcalendar-date {
+  font-size: 14px;
+}
+
+/* Customize the selected date */
+.ant-fullcalendar-value {
+  background-color: #333;
+  color: #fff;
+  border-radius: 5px;
+  font-weight: bold;
+}

@@ -10,9 +10,7 @@ import { CreateTurnDto } from 'src/turns/create-turn.dto';
 export class BuildService {
   constructor(@InjectModel('Build') private readonly buildModel: Model<Build>) { }
 
-  // update(id: string, newTurn: CreateTurnDto) {
-  //     throw new Error('Method not implemented.');
-  // }
+
   async create(createBuildDto: CreateBuildDto): Promise<Build> {
 
     const createdTurn = new this.buildModel(createBuildDto);
